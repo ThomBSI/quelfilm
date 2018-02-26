@@ -1,5 +1,3 @@
-'use strict';
-
 /** Google Assistant helper library. */
 const DialogflowApp = require('actions-on-google').DialogflowApp;
 const actionHandlers = require('./actionHandlers');
@@ -26,4 +24,8 @@ exports.processV1Request = function (request, response) {
     actionHandlers.actionHandlers[action]()
         .then(data => v1Sender.sendResponse(data, app, requestSource))
         .catch(error => v1Sender.sendError(error));
+}
+
+function sendResponse(response) {
+
 }

@@ -1,5 +1,4 @@
-'use strict';
-
+const { AssistantApp, DialogflowApp } = require('actions-on-google');
 const businessModule = require('../business/movies');
 const INPUT_MOVIES_POPULAR = 'input.movies.popular';
 const INPUT_MOVIE_RECAP = 'input.movie.recap';
@@ -23,7 +22,10 @@ exports.actionHandlers;
 function inputMoviesPopularHandler() {
     return new Promise((resolve, reject) => {
         businessModule.getBestMovies()
-            .then(titles => resolve(titles))
+            .then(titles =>{
+
+                resolve(titles);
+            })
             .catch(err => reject(err));
     });
 }

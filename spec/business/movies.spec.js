@@ -129,12 +129,20 @@ describe('businessMovies :', () => {
             });
         });
     });
-    // describe('#recapMovie', () => {
-    //     it('Doit être une fonction', () => {
-    //         expect(businessMovies).toBe(jasmine.any(Function));
-    //     });
-    //     it('Doit appeler getMovieDetail', () => {
-            
-    //     });
-    // });
+    describe('#recapMovie', () => {
+        describe('cas normaux :', () => {
+            it('Doit être une fonction', () => {
+                expect(businessMovies.recapMovie).toBe(jasmine.any(Function));
+            });
+            it('Doit appeler la méthode getMovieRecap', () => {
+                
+            });
+            it('Doit retourner le résumé du film', () => {
+                
+            });
+        });
+        describe('cas anormaux :', () => {
+
+        });
+    });
 });
