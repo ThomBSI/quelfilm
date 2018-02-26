@@ -1,6 +1,5 @@
-'use strict';
-
 const https = require('https');
+const Promise = require('promise');
 const apiKey = 'bc1b9e5030979ddbb65d3eca646e29f9';
 const apiUrl = 'https://api.themoviedb.org/3';
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const businessModule = require('../business/business');
+const businessModule = require('../business/movies');
 const INPUT_MOVIES_POPULAR = 'input.movies.popular';
 const INPUT_MOVIE_RECAP = 'input.movie.recap';
 const INPUT_WELCOME = 'input.welcome';

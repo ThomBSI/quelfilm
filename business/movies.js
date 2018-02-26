@@ -1,6 +1,8 @@
-'use strict';
+const remote = require('../remote/movies');
+const Promise = require('promise');
 
-const remote = require('../remote/remote');
+const apiPopularMoviesErrorMessage = 'Je n\'arrive à récupérer les films auprès du serveur...';
+const apiNoResultsErrorMessage = 'Je n\'ais trouvé aucun film correspondant à votre recherche...';
 
 /*
  * Retourne la liste des titres des 5 meilleurs films sous la forme d'un tableau.
@@ -9,26 +11,21 @@ exports.getBestMovies = function () {
     return new Promise((resolve, reject) => {
         remote.getPopularMovies()
             .then(apiResponse => {
+                if(apiResponse.results.length === 0) reject(apiNoResultsErrorMessage);
                 let titlesArray = [];
                 apiResponse.results.forEach((movie, index) => {
                     let directorName = '';
                     remote.getPersonName(movie.id, 'crew', 'Director')
                         .then(dirName => {
                             if (dirName != '') directorName = ` de ${dirName}`;
-                            if (index < 5) {
-                                titlesArray.push(`${movie.title}${directorName}`);
-                            } else {
-                                let responseData = {};
-                                responseData.googleResponse.suggestions = titlesArray;
-                                responseData.standardResponse.speech = 'Voici une liste de 5 films.';
-                                responseData.standardResponse.data = titlesArray.toString;
-                                resolve(responseData);
-                            }
+                            titlesArray.push(`${movie.title}${directorName}`);
+                            if (index === 4) resolve(titlesArray);
                         })
-                        .catch(err => reject(err));
+                        .catch(err => reject(apiPopularMoviesErrorMessage));
                 });
+                resolve(titlesArray);
             })
-            .catch(err => reject(err));
+            .catch(err => reject(apiPopularMoviesErrorMessage));
     });
 }
 
