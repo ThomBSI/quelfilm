@@ -11,6 +11,7 @@ exports.buildMoviesListItems = function(moviesList) {
     moviesList.forEach((movie) => {
         richResponse.addBasicCard(buildSingleMovieCard(movie));
     });
+    console.log(richResponse);
     return richResponse;
 }
 
@@ -18,7 +19,7 @@ exports.buildMoviesListItems = function(moviesList) {
  * Construit la carte d'un film.
  * @param {*} movie 
  */
-exports.buildSingleMovieCard = function(movie) {
+let buildSingleMovieCard = function(movie) {
     if(movie === null || movie.title) return null;
     let app = new AssistantApp();
     let card = app.buildBasicCard()

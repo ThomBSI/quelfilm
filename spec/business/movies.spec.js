@@ -1,18 +1,26 @@
+const sinon = require('sinon');
 const businessMovies = require('../../business/movies');
 const remoteMovies = require('../../remote/movies');
-const sinon = require('sinon');
+import { Movie } from '../../models/movie';
 
 const apiPopularMoviesErrorMessage = 'Je n\'arrive à récupérer les films auprès du serveur...';
-const apiNoResultsErrorMessage = 'Je n\'ais trouvé aucun film correspondant à votre recherche...';
+const apiNoResultsErrorMessage = 'Je n\'ai trouvé aucun film correspondant à votre recherche...';
 
 describe('businessMovies :', () => {
     describe('#getBestMovies', () => {
         let stubApiGetPopularMovies;
         let stubApiGetPersonName;
-        afterAll(() => {
-            stubApiGetPopularMovies.restore();
-            stubApiGetPersonName.restore();
-        })
+        const expectedMoviesTitleList = ['Le labyrinthe', 'Amar', 'Cinquante nuances plus claires', 'Thor  Ragnarok', 'Dunkerque'];
+        const expectedDeirectorNameList = ['Wes Ball', 'Esteban Crespo', 'James Foley', 'Taika Waititi', 'Christopher Nolan'];
+        let expectedMoviesArray = new Array();
+        beforeAll(() => {
+            expectedMoviesTitleList.forEach((elt, index) => {
+                let newMovie = new Movie();
+                newMovie.title = elt;
+                newMovie.directorName = expectedDeirectorNameList[index];
+                expectedMoviesArray.push(newMovie);
+            });
+        });
         describe('cas normaux :', () => {
             const apiJsonResponsePopularMovies = {
                 results: [
@@ -48,10 +56,6 @@ describe('businessMovies :', () => {
                     .withArgs('284053', 'crew', 'Director').resolves('Taika Waititi')
                     .withArgs('374720', 'crew', 'Director').resolves('Christopher Nolan');
             });
-            afterEach(() => {
-                if (stubApiGetPopularMovies.restore) stubApiGetPopularMovies.restore();
-                if (stubApiGetPersonName.restore) stubApiGetPersonName.restore();
-            });
             it('Doit être une fonction.', () => {
                 expect(businessMovies.getBestMovies).toEqual(jasmine.any(Function));
             });
@@ -67,33 +71,31 @@ describe('businessMovies :', () => {
                     done();
                 });
             });
-            it('Doit retourner les bons noms de films.', (done) => {
-                const expectedMoviesTitleList = ['Le labyrinthe', 'Amar', 'Cinquante nuances plus claires', 'Thor  Ragnarok', 'Dunkerque'];
+            it('Doit retourner les bons titres de films.', (done) => {
                 businessMovies.getBestMovies().then((moviesList) => {
-                    moviesList.forEach((movieTitle, index) => {
-                        expect(movieTitle).toContain(expectedMoviesTitleList[index]);
+                    moviesList.forEach((returnedMovie, index) => {
+                        expect(returnedMovie.title).toContain(expectedMoviesArray[index].title);
                     });
                     done();
                 });
             });
             it('Doit retourner les bons noms de réalisateurs.', (done) => {
-                const expectedDeirectorNameList = ['Wes Ball', 'Esteban Crespo', 'James Foley', 'Taika Waititi', 'Christopher Nolan'];
                 businessMovies.getBestMovies().then((moviesList) => {
-                    moviesList.forEach((movieTitle, index) => {
-                        expect(movieTitle).toContain(expectedDeirectorNameList[index]);
+                    moviesList.forEach((returnedMovie, index) => {
+                        expect(movieTitle.directorName).toContain(expectedMoviesArray[index].directorName);
                     });
                     done();
                 });
+            });
+            afterEach(() => {
+                if (stubApiGetPopularMovies.restore) stubApiGetPopularMovies.restore();
+                if (stubApiGetPersonName.restore) stubApiGetPersonName.restore();
             });
         });
         describe('cas anormaux :', () => {
             beforeEach(() => {
                 stubApiGetPopularMovies = sinon.stub(remoteMovies, 'getPopularMovies');
                 stubApiGetPersonName = sinon.stub(remoteMovies, 'getPersonName');
-            });
-            afterEach(() => {
-                if (stubApiGetPopularMovies.restore) stubApiGetPopularMovies.restore();
-                if (stubApiGetPersonName.restore) stubApiGetPersonName.restore();
             });
             it('erreur de l`\'api', (done) => {
                 stubApiGetPopularMovies.rejects('api error');
@@ -131,6 +133,14 @@ describe('businessMovies :', () => {
                     done();
                 });
             });
+            afterEach(() => {
+                if (stubApiGetPopularMovies.restore) stubApiGetPopularMovies.restore();
+                if (stubApiGetPersonName.restore) stubApiGetPersonName.restore();
+            });
+        });
+        afterAll(() => {
+            stubApiGetPopularMovies.restore();
+            stubApiGetPersonName.restore();
         });
     });
     describe('#recapMovie', () => {

@@ -35,6 +35,7 @@ exports.actionNames = actionNames;
  }
 
 function inputMoviesPopularHandler() {
+    console.log('inputMoviesPopularHandler');
     return new Promise((resolve, reject) => {
         businessModule.getBestMovies()
             .then(moviesList => resolve(googleFormatter.buildMoviesListItems(moviesList)))

@@ -12,13 +12,6 @@ describe('actionHandlers', () => {
         beforeEach(() => {
             stubGetBestMovies = sinon.stub(business, 'getBestMovies');
         });
-        afterEach(() => {
-            stubGetBestMovies.restore();
-        });
-        afterAll(() => {
-            stubBuildMoviesListItems.restore();
-            stubBuildSimpleResponse.restore();
-        });
         it('Doit retourner la réponse attendue en cas de succès dans les couches inférieurs', (done) => {
             let expectedGResponseList = {list: 'test'};
             let movieList= [];
@@ -40,6 +33,13 @@ describe('actionHandlers', () => {
                 expect(error).toBe(expectedGresponseError);
                 done();
             });
-        })
+        });
+        afterEach(() => {
+            stubGetBestMovies.restore();
+        });
+        afterAll(() => {
+            stubBuildMoviesListItems.restore();
+            stubBuildSimpleResponse.restore();
+        });
     });
 });
