@@ -1,32 +1,44 @@
 const { AssistantApp, DialogflowApp } = require('actions-on-google');
 const businessModule = require('../business/movies');
-const INPUT_MOVIES_POPULAR = 'input.movies.popular';
-const INPUT_MOVIE_RECAP = 'input.movie.recap';
-const INPUT_WELCOME = 'input.welcome';
-const INPUT_UNKNOWN = 'input.unknown';
-const DEFAULT = 'default'
+const googleFormatter = require('../responseFormatter/googleFormatter');
+const actionNames = {
+    INPUT_MOVIES_POPULAR: 'input.movies.popular',
+    INPUT_MOVIE_RECAP: 'input.movie.recap',
+    INPUT_WELCOME: 'input.welcome',
+    INPUT_UNKNOWN: 'input.unknown'
+}
+/** Liste des noms d'action paramétrés dans la partie fullfilment des intents dans Dialogflow. */
+exports.actionNames = actionNames;
 /** 
- * Liste des gestionnaires pouvant être appelés par DialogFlow. 
- * Chaque fonction retourne une Promise qui résout les données ou le message à afficher.
+ * Appel le bon gestionnaire en fonction du nom de l'action passé en paramètre.
  */
-let actionHandlers = new Map();
-actionHandlers
-    .set(DEFAULT, defaultHandler)
-    .set(INPUT_UNKNOWN, inputUnknownHandler)
-    .set(INPUT_WELCOME, inputWelcomeHandler)
-    .set(INPUT_MOVIES_POPULAR, inputMoviesPopularHandler)
-    .set(INPUT_MOVIE_RECAP, inputMovieRecapHandler);
-
-exports.actionHandlers;
+ exports.actionHandlers = function (action) {
+     let functionHandler;
+     switch (action) {
+         case actionNames.INPUT_MOVIES_POPULAR:
+             functionHandler = inputMoviesPopularHandler;
+             break;
+         case actionNames.INPUT_MOVIE_RECAP:
+             functionHandler = inputMovieRecapHandler;
+             break;
+         case actionNames.INPUT_WELCOME:
+             functionHandler = inputWelcomeHandler;
+             break;
+         case actionNames.INPUT_UNKNOWN:
+             functionHandler = inputUnknownHandler;
+             break;
+         default:
+             functionHandler = defaultHandler;
+             break;
+     }
+     return functionHandler;
+ }
 
 function inputMoviesPopularHandler() {
     return new Promise((resolve, reject) => {
         businessModule.getBestMovies()
-            .then(titles =>{
-
-                resolve(titles);
-            })
-            .catch(err => reject(err));
+            .then(moviesList => resolve(googleFormatter.buildMoviesListItems(moviesList)))
+            .catch(errorMessage => reject(googleFormatter.buildSimpleResponse(errorMessage.name)));
     });
 }
 

@@ -9,6 +9,10 @@ describe('businessMovies :', () => {
     describe('#getBestMovies', () => {
         let stubApiGetPopularMovies;
         let stubApiGetPersonName;
+        afterAll(() => {
+            stubApiGetPopularMovies.restore();
+            stubApiGetPersonName.restore();
+        })
         describe('cas normaux :', () => {
             const apiJsonResponsePopularMovies = {
                 results: [
@@ -132,7 +136,7 @@ describe('businessMovies :', () => {
     describe('#recapMovie', () => {
         describe('cas normaux :', () => {
             it('Doit être une fonction', () => {
-                expect(businessMovies.recapMovie).toBe(jasmine.any(Function));
+                expect(businessMovies.recapMovie).toEqual(jasmine.any(Function));
             });
             it('Doit appeler la méthode getMovieRecap', () => {
                 

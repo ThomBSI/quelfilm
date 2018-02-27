@@ -11,7 +11,7 @@
   "scripts": {
     "test-init": "jasmine init",
     "test": "jasmine",
-    "deploy": "gcloud deploy --only functions:dialogflowFirebaseFulfillment"
+    "deploy": "gcloud beta functions deploy dialogflowFirebaseFulfillment --trigger-http"
   },
   "dependencies": {
     "actions-on-google": "^1.5.x",

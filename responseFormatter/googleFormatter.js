@@ -1,8 +1,7 @@
-const { AssistantApp, DialogflowApp } = require('actions-on-google');
+const { AssistantApp, DialogflowApp, SimpleResponse } = require('actions-on-google');
 
 /**
  * Construit une liste de films sous la forme d'une liste de cartes google assistant. 
- * Le nombre déléments doit être compris entre 2 et 20 inclus.
  * @param {*} moviesList 
  */
 exports.buildMoviesListItems = function(moviesList) {
@@ -22,14 +21,21 @@ exports.buildMoviesListItems = function(moviesList) {
 exports.buildSingleMovieCard = function(movie) {
     if(movie === null || movie.title) return null;
     let app = new AssistantApp();
-    let card = app.buildBasicCard();
-    card.setTitle(movie.title);
+    let card = app.buildBasicCard()
+        .setTitle(movie.title)
+        .setImage(movie.posterPath)
+        .setSubtitle(`de ${movie.directorName}`);
+    return card;
+}
 
-
-
-
-    moviesList.forEach((movie) => {
-        richResponse.addBasicCard(buildSingleMovieCard(movie));
-    });
-    return richResponse;
+/**
+ * Construit une réponse simple sous la forme d'un texte et d'un speech. Le texte est optionnel.
+ * @param {*} speech 
+ * @param {*} displayText 
+ */
+exports.buildSimpleResponse = function(speech, displayText) {
+    return {
+        speech: speech | displayText,
+        displayText: displayText | speech
+    }
 }

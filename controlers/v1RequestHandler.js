@@ -1,7 +1,6 @@
 /** Google Assistant helper library. */
 const DialogflowApp = require('actions-on-google').DialogflowApp;
 const actionHandlers = require('./actionHandlers');
-const v1Sender = require('../sender/v1Sender');
 
 /**
  * Function to handle v1 webhook requests from Dialogflow.
@@ -17,15 +16,7 @@ exports.processV1Request = function (request, response) {
         request: request,
         response: response
     });
-    // If undefined or unknown action use the default handler
-    if (!actionHandlers.actionHandlers[action]) {
-        action = 'default';
-    }
-    actionHandlers.actionHandlers[action]()
-        .then(data => v1Sender.sendResponse(data, app, requestSource))
-        .catch(error => v1Sender.sendError(error));
-}
-
-function sendResponse(response) {
-
+    actionHandlers.actionHandlers(action)()
+        .then(response => app.ask(response))
+        .catch(errorResponse => app.ask(errorResponse));
 }
