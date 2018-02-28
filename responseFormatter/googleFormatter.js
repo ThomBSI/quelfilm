@@ -1,32 +1,23 @@
-const { AssistantApp, DialogflowApp, SimpleResponse } = require('actions-on-google');
+const DialogflowApp = require('actions-on-google').DialogflowApp;
 
 /**
  * Construit une liste de films sous la forme d'une liste de cartes google assistant. 
  * @param {*} moviesList 
  */
 exports.buildMoviesListItems = function(moviesList) {
-    if(moviesList.length === 0) return null;
-    let app = new AssistantApp();
-    let richResponse = app.buildRichResponse();
-    moviesList.forEach((movie) => {
-        richResponse.addBasicCard(buildSingleMovieCard(movie));
-    });
-    console.log(richResponse);
-    return richResponse;
-}
-
-/**
- * Construit la carte d'un film.
- * @param {*} movie 
- */
-let buildSingleMovieCard = function(movie) {
-    if(movie === null || movie.title) return null;
-    let app = new AssistantApp();
-    let card = app.buildBasicCard()
-        .setTitle(movie.title)
-        .setImage(movie.posterPath)
-        .setSubtitle(`de ${movie.directorName}`);
-    return card;
+    let listResponse = null;
+    if(moviesList.length != 0) {
+        let app = new DialogflowApp();
+        let listOptions = [];
+        moviesList.forEach((movie) => {
+            let item = buildSingleMovieOptionItem(movie);
+            if (item != null) {
+                listOptions.push(item);
+            }
+        });
+        listResponse = app.buildList(`Les ${moviesList.length} films les plus populaires en ce moment`).addItems(listOptions);
+    }
+    return listResponse;
 }
 
 /**
@@ -35,8 +26,27 @@ let buildSingleMovieCard = function(movie) {
  * @param {*} displayText 
  */
 exports.buildSimpleResponse = function(speech, displayText) {
-    return {
+    return JSON.stringify({
         speech: speech | displayText,
         displayText: displayText | speech
+    });
+}
+
+/**
+ * Construit la carte d'un film pour une liste. 
+ * Pour construire la carte d'un film, il faut à minima le titre du film et son id. 
+ * ATTENTION ! l'Id ne peut pas être égale à zéro ! 
+ * @param {*} movie 
+ */
+function buildSingleMovieOptionItem(movie) {
+    let item = null;
+    if(movie && movie.title != '' && movie.id != '') {
+        let app = new DialogflowApp();
+        item = app.buildOptionItem(`${movie.id}`)
+            .setTitle(movie.title)
+            .setImage(movie.posterPath, movie.title);
+        console.log('movie.posterPath', movie.posterPath);
+        if(movie.directorName != '') item.setDescription(`de ${movie.directorName}`);
     }
+    return item;
 }

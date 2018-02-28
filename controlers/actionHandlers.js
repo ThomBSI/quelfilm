@@ -35,10 +35,13 @@ exports.actionNames = actionNames;
  }
 
 function inputMoviesPopularHandler() {
-    console.log('inputMoviesPopularHandler');
     return new Promise((resolve, reject) => {
         businessModule.getBestMovies()
-            .then(moviesList => resolve(googleFormatter.buildMoviesListItems(moviesList)))
+            .then(moviesList => {
+                let formatedResponse = googleFormatter.buildMoviesListItems(moviesList);
+                console.log('formatedResponse',formatedResponse);
+                resolve(formatedResponse);
+            })
             .catch(errorMessage => reject(googleFormatter.buildSimpleResponse(errorMessage.name)));
     });
 }

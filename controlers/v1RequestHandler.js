@@ -8,7 +8,6 @@ const actionHandlers = require('./actionHandlers');
  * @param {*} response 
  */
 exports.processV1Request = function (request, response) {
-    console.log('processV1Request');
     let action = request.body.result.action; // https://dialogflow.com/docs/actions-and-parameters
     let parameters = request.body.result.parameters; // https://dialogflow.com/docs/actions-and-parameters
     let inputContexts = request.body.result.contexts; // https://dialogflow.com/docs/contexts
@@ -19,8 +18,19 @@ exports.processV1Request = function (request, response) {
     });
     actionHandlers.actionHandlers(action)()
         .then(response => {
-            console.log('success', response);
-            app.ask(response);
+
+            // let app2 = new DialogflowApp();
+
+            // // app.askWithList('C\'est qui le papa ?', 
+            // let listTest = app2.buildList('titre !')
+            //     .addItems([app2.buildOptionItem('1').setTitle('bof').setImage('https://image.tmdb.org/t/p/w500/7h9LUexxkTSX9YWSQ88b6PE1JdL.jpg', 'affiche').setDescription('de Michel druker'),
+            //     app2.buildOptionItem('2').setTitle('hehe').setImage('https://image.tmdb.org/t/p/w500/7h9LUexxkTSX9YWSQ88b6PE1JdL.jpg', 'poster')]);
+
+            // console.log('liste de test', listTest);
+            console.log('Vrai liste qui marche bof...', response);
+                
+
+            app.askWithList('Quelques idées...', response);
         })
         .catch(errorResponse => {
             console.log('error', errorResponse);

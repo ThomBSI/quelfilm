@@ -6,7 +6,6 @@ const v1Handler = require('./controlers/v1RequestHandler');
  * Main.
  */
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
-  console.log('request.body', request.body);
   if (request.body.result) {
     v1Handler.processV1Request(request, response);
   } else {

@@ -18,10 +18,12 @@ describe('actionHandlers', () => {
             stubBuildMoviesListItems = sinon.stub(googleFormatter, 'buildMoviesListItems');
             stubBuildMoviesListItems.withArgs(movieList).returns(expectedGResponseList);
             stubGetBestMovies.resolves(movieList);
-            actionHandlers.actionHandlers(inputName)().then((response) => {
-                expect(response).toBe(expectedGResponseList);
-                done();
-            }).catch((err) => fail('L\'action est suposée réussir...'));
+            actionHandlers.actionHandlers(inputName)()
+                .then((response) => {
+                    expect(response).toBe(expectedGResponseList);
+                    done();
+                })
+                .catch((err) => fail('L\'action est suposée réussir...'));
         });
         it('Doit retourner un message d\'erreur formaté en cas d\'erreur dans les couches inférieurs', (done) => {
             let expectedGresponseError = {speech: 'errormessage'};
@@ -29,10 +31,12 @@ describe('actionHandlers', () => {
             stubBuildSimpleResponse = sinon.stub(googleFormatter, 'buildSimpleResponse');
             stubBuildSimpleResponse.withArgs(errorMessage).returns(expectedGresponseError);
             stubGetBestMovies.rejects(errorMessage);
-            actionHandlers.actionHandlers(inputName)().then((res) => fail('L\'action est suposée échouer...')).catch((error) => {
-                expect(error).toBe(expectedGresponseError);
-                done();
-            });
+            actionHandlers.actionHandlers(inputName)()
+                .then((res) => fail('L\'action est suposée échouer...'))
+                .catch((error) => {
+                    expect(error).toBe(expectedGresponseError);
+                    done();
+                });
         });
         afterEach(() => {
             stubGetBestMovies.restore();
