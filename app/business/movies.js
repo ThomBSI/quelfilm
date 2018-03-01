@@ -24,60 +24,32 @@ exports.getBestMovies = function (number) {
                 if (typeof apiResponse != 'undefined') {
                     if(apiResponse.results.length === 0) resolve(new Array());
                     let moviesArray = [];
-
-                    // apiResponse.results.every((movieObj, index) => {
-                    //     if (index < number) {
-                    //         let movie = apiResponse.results[index];
-                    //         let movieObject = new Movie();
-                    //         movieObject.title = movie[tmdbRef.moviePopular.title];
-                    //         movieObject.id = movie[tmdbRef.moviePopular.id];
-                    //         movieObject.posterPath = `${urlPoster}${movie[tmdbRef.moviePopular.posterPath]}`;
-                    //         movieObject.releaseDate = movie[tmdbRef.moviePopular.releaseDate];
-                    //         remote.getPersonName(movieObject.id, 'crew', 'Director')
-                    //             .then(dirName => {
-                    //                 if (typeof dirName != 'undefined') {
-                    //                     movieObject.directorName = dirName;
-                    //                 }
-                    //                 moviesArray.push(movieObject);
-                    //                 if (index === apiResponse.results.length - 1 || index === (number - 1)) {
-                    //                     resolve(moviesArray);
-                    //                 }
-                    //                 continue;
-                    //             })
-                    //             .catch((err) => {
-                    //                 reject(err);
-                    //             });
-                    //     } else {
-                    //         return false;
-                    //     }
-                    // });
-
-                    for (let index = 0; index < number; index++) {
-                        if (index === apiResponse.results.length) {
-                            break;
-                        } else {
-                            let movie = apiResponse.results[index];
-                            let movieObject = new Movie();
-                            movieObject.title = movie[tmdbRef.moviePopular.title];
-                            movieObject.id = movie[tmdbRef.moviePopular.id];
-                            movieObject.posterPath = `${urlPoster}${movie[tmdbRef.moviePopular.posterPath]}`;
-                            movieObject.releaseDate = movie[tmdbRef.moviePopular.releaseDate];
-                            remote.getPersonName(movieObject.id, 'crew', 'Director')
-                                .then(dirName => {
-                                    if (typeof dirName != 'undefined') {
-                                        movieObject.directorName = dirName;
-                                    }
-                                    moviesArray.push(movieObject);
-                                    if (index === apiResponse.results.length - 1 || index === (number - 1)) {
-                                        resolve(moviesArray);
-                                    }
-                                    continue;
-                                })
-                                .catch((err) => {
-                                    reject(err);
-                                });
+                    let promiseArray = [];
+                    apiResponse.results.map((movie, index) => {
+                        if (index < number) {
+                            promiseArray.push(new Promise((resolveMap) => {
+                                let movieObject = new Movie();
+                                movieObject.title = movie[tmdbRef.moviePopular.title];
+                                movieObject.id = movie[tmdbRef.moviePopular.id];
+                                movieObject.posterPath = `${urlPoster}${movie[tmdbRef.moviePopular.posterPath]}`;
+                                movieObject.releaseDate = movie[tmdbRef.moviePopular.releaseDate];
+                                remote.getPersonName(movieObject.id, 'crew', 'Director')
+                                    .then(dirName => {
+                                        if (typeof dirName != 'undefined') {
+                                            movieObject.directorName = dirName;
+                                        }
+                                        resolveMap(movieObject);
+                                    })
+                                    .catch((err) => {
+                                        resolveMap(movieObject);
+                                    });
+                            }));
                         }
-                    }
+                    });
+                    Promise.all(promiseArray)
+                        .then((finalArray) => {
+                            resolve(finalArray);
+                        });
                 }
             })
             .catch((err) => reject(apiPopularMoviesErrorMessage));
