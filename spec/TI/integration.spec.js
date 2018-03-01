@@ -1,19 +1,17 @@
-const actionHandler = require('../../controlers/actionHandlers');
-const businessMovies = require('../../business/movies');
-const remoteMovies = require('../../remote/movies');
+const actionHandler = require('../../../app/controlers/actionHandlers');
+const businessMovies = require('../../../app/business/movies');
+const remoteMovies = require('../../../app/remote/movies');
 
-describe('quelfilm', () => {
+xdescribe('quelfilm', () => {
     describe('controlers/actionHandlers', () => {
         it('#inputMoviesPopularHandler', (done) => {
             actionHandler.actionHandlers(actionHandler.actionNames.INPUT_MOVIES_POPULAR)()
                 .then((response) => {
                     if (typeof response != 'undefined') {
-                        console.log('quelfilm controlers/actionHandlers #inputMoviesPopularHandler then', response);
                     }
                     done();
                 })
                 .catch((error) => {
-                    console.log('quelfilm controlers/actionHandlers #inputMoviesPopularHandler catch', error);
                     done();
                 });
         });
@@ -23,12 +21,10 @@ describe('quelfilm', () => {
             businessMovies.getBestMovies()
                 .then((data) => {
                     if (typeof data != 'undefined') {
-                        console.log('quelfilm business/movies #getBestMovies then', data);
                     }
                     done();
                 })
                 .catch((error) => {
-                    console.log('quelfilm business/movies #getBestMovies catch', error);
                     done();
                 });
         });
@@ -38,12 +34,10 @@ describe('quelfilm', () => {
             remoteMovies.getPopularMovies()
                 .then((data) => {
                     if (typeof data != 'undefined') {
-                        console.log('quelfilm remote/movies #getPopularMovies then', data);
                     }
                     done();
                 })
                 .catch((error) => {
-                    console.log('quelfilm remote/movies #getPopularMovies catch', error);
                     done();
                 });
         });
@@ -51,12 +45,10 @@ describe('quelfilm', () => {
             remoteMovies.getPersonName(441614, 'crew', 'Director')
                 .then((data) => {
                     if (typeof data != 'undefined') {
-                        console.log('quelfilm remote/movies #getPersonName then', data);
                     }
                     done();
                 })
                 .catch((error) => {
-                    console.log('quelfilm remote/movies #getPersonName catch', error);
                     done();
                 });
         });

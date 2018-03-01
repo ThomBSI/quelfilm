@@ -1,6 +1,6 @@
 const sinon = require('sinon');
-const remote = require('../../remote/movies');
-const httpUtils = require('../../remote/utils');
+const remote = require('../../../app/remote/movies');
+const httpUtils = require('../../../app/remote/utils');
 
 describe('apiTheMovieDB', () => {
     let stubHttps

@@ -34,19 +34,18 @@ exports.actionNames = actionNames;
      return functionHandler;
  }
 
-function inputMoviesPopularHandler() {
+function inputMoviesPopularHandler(parameters) {
     return new Promise((resolve, reject) => {
-        businessModule.getBestMovies()
+        businessModule.getBestMovies(parameters.number)
             .then(moviesList => {
                 let formatedResponse = googleFormatter.buildMoviesListItems(moviesList);
-                console.log('formatedResponse',formatedResponse);
                 resolve(formatedResponse);
             })
             .catch(errorMessage => reject(googleFormatter.buildSimpleResponse(errorMessage.name)));
     });
 }
 
-function inputMovieRecapHandler() {
+function inputMovieRecapHandler(parameters) {
     return new Promise((resolve, reject) => {
         businessModule.recapMovie(request.body.result.parameters['Movie'])
             .then(recap => resolve(recap))
@@ -55,21 +54,21 @@ function inputMovieRecapHandler() {
 }
 
 /** The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent). */
-function inputWelcomeHandler() {
+function inputWelcomeHandler(parameters) {
     return new Promise((resolve, reject) => {
         resolve('Hello, Welcome to my Dialogflow agent!');
     });
 }
 
 /** The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents). Use the Actions on Google lib to respond to Google requests; for other requests use JSON. */
-function inputUnknownHandler() {
+function inputUnknownHandler(parameters) {
     return new Promise((resolve, reject) => {
         resolve('Je rencontre un problème :-/ Pouvez-vous rééssayer plus tard ?');
     });
 }
 
 /** Default handler for unknown or undefined actions. */
-function defaultHandler() {
+function defaultHandler(parameters) {
     return new Promise((resolve, reject) => {
         resolve('Je ne comprend pas votre demande');
     });

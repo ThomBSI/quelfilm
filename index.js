@@ -1,6 +1,6 @@
 /** Cloud Functions for Firebase library. */
 const functions = require('firebase-functions');
-const v1Handler = require('./controlers/v1RequestHandler');
+const v1Handler = require('./app/controlers/v1RequestHandler');
 
 /**
  * Main.

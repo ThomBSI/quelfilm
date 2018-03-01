@@ -1,7 +1,7 @@
 {
   "name": "quelfilm",
   "description": "Chatbot permettant de passer moins de temps à rechercher un film.",
-  "version": "0.0.71",
+  "version": "0.1.1",
   "private": true,
   "license": "Apache Version 2.0",
   "author": "Thomas MARQUIS",
@@ -11,7 +11,7 @@
   "scripts": {
     "test-init": "jasmine init",
     "test": "jasmine",
-    "integration": "jasmine spec/integration/integration.spec.js",
+    "integration": "jasmine spec/TI/integration.spec.js",
     "deploy": "gcloud beta functions deploy dialogflowFirebaseFulfillment --trigger-http"
   },
   "dependencies": {

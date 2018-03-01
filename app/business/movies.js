@@ -1,5 +1,4 @@
 const remote = require('../remote/movies');
-const Promise = require('promise');
 const Movie = require('../models/movie');
 const tmdbRef = require('../config/tmdb');
 
@@ -11,20 +10,53 @@ const urlPoster = 'https://image.tmdb.org/t/p/w500';
 /*
  * Retourne la liste des titres des 5 meilleurs films sous la forme d'un tableau.
  */
-exports.getBestMovies = function () {
+exports.getBestMovies = function (number) {
+    if (!number) {
+        number = 5;
+    } else if (number < 2 ) {
+        number = 2;
+    } else if (number > 20) {
+        number = 20;
+    }
     return new Promise((resolve, reject) => {
         remote.getPopularMovies()
             .then(apiResponse => {
                 if (typeof apiResponse != 'undefined') {
-                    // console.log('api response business', apiResponse);
-                    if(apiResponse.results.length === 0) reject(apiNoResultsErrorMessage);
+                    if(apiResponse.results.length === 0) resolve(new Array());
                     let moviesArray = [];
-                    for (let index = 0; index < 5; index++) {
+
+                    // apiResponse.results.every((movieObj, index) => {
+                    //     if (index < number) {
+                    //         let movie = apiResponse.results[index];
+                    //         let movieObject = new Movie();
+                    //         movieObject.title = movie[tmdbRef.moviePopular.title];
+                    //         movieObject.id = movie[tmdbRef.moviePopular.id];
+                    //         movieObject.posterPath = `${urlPoster}${movie[tmdbRef.moviePopular.posterPath]}`;
+                    //         movieObject.releaseDate = movie[tmdbRef.moviePopular.releaseDate];
+                    //         remote.getPersonName(movieObject.id, 'crew', 'Director')
+                    //             .then(dirName => {
+                    //                 if (typeof dirName != 'undefined') {
+                    //                     movieObject.directorName = dirName;
+                    //                 }
+                    //                 moviesArray.push(movieObject);
+                    //                 if (index === apiResponse.results.length - 1 || index === (number - 1)) {
+                    //                     resolve(moviesArray);
+                    //                 }
+                    //                 continue;
+                    //             })
+                    //             .catch((err) => {
+                    //                 reject(err);
+                    //             });
+                    //     } else {
+                    //         return false;
+                    //     }
+                    // });
+
+                    for (let index = 0; index < number; index++) {
                         if (index === apiResponse.results.length) {
                             break;
                         } else {
                             let movie = apiResponse.results[index];
-                            // console.log('business foreach', movie, index);
                             let movieObject = new Movie();
                             movieObject.title = movie[tmdbRef.moviePopular.title];
                             movieObject.id = movie[tmdbRef.moviePopular.id];
@@ -36,13 +68,13 @@ exports.getBestMovies = function () {
                                         movieObject.directorName = dirName;
                                     }
                                     moviesArray.push(movieObject);
-                                    if (index === apiResponse.results.length - 1 || index === 4) {
-                                        // console.log('bsuiness moviesArray', moviesArray);
+                                    if (index === apiResponse.results.length - 1 || index === (number - 1)) {
                                         resolve(moviesArray);
                                     }
+                                    continue;
                                 })
                                 .catch((err) => {
-                                    console.log('getBestMovies -> getPersonName', err)
+                                    reject(err);
                                 });
                         }
                     }

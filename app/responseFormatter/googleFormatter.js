@@ -6,6 +6,10 @@ const DialogflowApp = require('actions-on-google').DialogflowApp;
  */
 exports.buildMoviesListItems = function(moviesList) {
     let listResponse = null;
+    let emptyMessage = {
+        speech: 'Aucun film n\'a pus être tourvé',
+        displayText: 'Aucun film n\'a pus être tourvé'
+    };
     if(moviesList.length != 0) {
         let app = new DialogflowApp();
         let listOptions = [];
@@ -15,7 +19,13 @@ exports.buildMoviesListItems = function(moviesList) {
                 listOptions.push(item);
             }
         });
-        listResponse = app.buildList(`Les ${moviesList.length} films les plus populaires en ce moment`).addItems(listOptions);
+        if(listOptions.length === 0) {
+            listResponse = emptyMessage;
+        } else {
+            listResponse = app.buildList(`Les ${moviesList.length} films les plus populaires en ce moment`).addItems(listOptions);
+        }
+    } else {
+        listResponse = emptyMessage;
     }
     return listResponse;
 }
@@ -26,10 +36,10 @@ exports.buildMoviesListItems = function(moviesList) {
  * @param {*} displayText 
  */
 exports.buildSimpleResponse = function(speech, displayText) {
-    return JSON.stringify({
+    return {
         speech: speech | displayText,
         displayText: displayText | speech
-    });
+    };
 }
 
 /**
@@ -45,7 +55,6 @@ function buildSingleMovieOptionItem(movie) {
         item = app.buildOptionItem(`${movie.id}`)
             .setTitle(movie.title)
             .setImage(movie.posterPath, movie.title);
-        console.log('movie.posterPath', movie.posterPath);
         if(movie.directorName != '') item.setDescription(`de ${movie.directorName}`);
     }
     return item;
