@@ -258,4 +258,119 @@ describe('businessMovies :', () => {
             stubApiGetPersonName.restore();
         });
     });
+    describe('#getMoviesByCriteria', () => {
+        let spy;
+        let stubDiscoverMovies;
+        let stubGetGenres;
+        let stubGetPersonByName;
+        let paramGenreList = ['action', 'drame'];
+        let paramActorsList = ['John Doe'];
+        beforeAll(() => {
+            spy = sinon.spy();
+        });
+        afterAll(() => {
+            spy.restore();
+        });
+        beforeEach(() => {
+            spy.resetHistory();
+            stubDiscoverMovies.restore();
+            stubGetGenres.restore();
+            stubGetPersonByName.restore();
+            stubDiscoverMovies = sinon.stub(remoteMovies, 'discoverMovies').resolves();
+            stubGetGenres = sinon.stub(remoteMovies, 'getGenres').resolves();
+            stubGetPersonByName = sinon.stub(remoteMovies, 'getPersonByName').resolves();
+        });
+        it('Doit appeller la méthode discoverMovies de la couche remote', (done) => {
+            stubDiscoverMovies.restore();
+            stubDiscoverMovies = sinon.stub(remoteMovies, 'discoverMovies').callsFake(() => {
+                return new Promise((resolve, reject) => {
+                    spy();
+                    resolve();
+                });
+            });
+            businessMovies.getMoviesByCriteria(paramGenreList)
+                .then((res) => {
+                    if (typeof res != 'undefined') {
+                        expect(spy.called).toBe(true);
+                    }
+                    done();
+                })
+                .catch((err) => fail(err));
+        });
+        it('Doit appeller la méthode getGenres de la couche remote une seule fois', () => {
+            stubGetGenres.restore();
+            stubGetGenres = sinon.stub(remoteMovies, 'getGenres').callsFake(() => {
+                return new Promise((resolve, reject) => {
+                    spy();
+                    resolve();
+                });
+            });
+            businessMovies.getMoviesByCriteria(paramGenreList)
+                .then((res) => {
+                    if (typeof res != 'undefined') {
+                        expect(spy.calledOnce).toBe(true);
+                    }
+                    done();
+                })
+                .catch((err) => fail(err));
+        });
+        it('Doit appeller la méthode getPersonByName de la couche remote si et seulement si au moins un nom est passé en paramètre', () => {
+            stubGetPersonByName.restore();
+            stubGetPersonByName = sinon.stub(remoteMovies, 'getPersonByName').callsFake(() => {
+                return new Promise((resolve, reject) => {
+                    spy();
+                    resolve();
+                });
+            });
+            businessMovies.getMoviesByCriteria(paramGenreList, paramActorsList)
+                .then((res) => {
+                    if (typeof res != 'undefined') {
+                        expect(spy.callCount).toBe(paramActorsList.length);
+                    }
+                    done();
+                })
+                .catch((err) => fail(err));
+            spy.resetHistory();
+            businessMovies.getMoviesByCriteria(paramGenreList)
+                .then((res) => {
+                    if (typeof res != 'undefined') {
+                        expect(spy.callCount).toBe(0);
+                    }
+                    done();
+                })
+                .catch((err) => fail(err));
+        });
+        it('Doit résoudre une liste de Movie en cas de succès', () => {
+            businessMovies.getMoviesByCriteria(paramGenreList)
+                .then((res) => {
+                    if (typeof res != 'undefined') {
+                        expect(res[0]).toEqual(jasmine.any(Movie));
+                    }
+                    done();
+                })
+                .catch((err) => fail(err));
+        });
+        it('Doit résoudre une liste de Movie non vide en cas de succès', () => {
+            businessMovies.getMoviesByCriteria(paramGenreList)
+                .then((res) => {
+                    if (typeof res != 'undefined') {
+                        expect(res.length).not.toBe(0);
+                    }
+                    done();
+                })
+                .catch((err) => fail(err));
+        });
+        it('Doit résoudre une liste de Movie de moins de 20 éléments en cas de succès', () => {
+            // TODO: Doit résoudre une liste de Movie de moins de 20 éléments en cas de succès
+
+        });
+        it('Doit résoudre une chaine de caractère si aucun film n\'a été trouvé', () => {
+            // TODO: Doit résoudre une liste de Movie vide si aucun film n\'a été trouvé
+
+        });
+        it('Doit rejeter une chaine de caractère en cas d\'erreur de la connexion avec l\'API', () => {
+            // TODO: Doit rejeter une chaine de caractère en cas d\'erreur de la connexion avec l\'API
+
+        });
+    });
 });

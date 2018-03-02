@@ -4,6 +4,7 @@ const tmdbRef = require('../config/tmdb');
 
 const apiPopularMoviesErrorMessage = 'Je n\'arrive à récupérer les films auprès du serveur...';
 const apiNoResultsErrorMessage = 'Je n\'ai trouvé aucun film correspondant à votre recherche...';
+const apiErrorMessage = 'Je rencontre une erreur... Tu peut réessayer plus tard ?';
 
 const urlPoster = 'https://image.tmdb.org/t/p/w500';
 
@@ -11,13 +12,7 @@ const urlPoster = 'https://image.tmdb.org/t/p/w500';
  * Retourne la liste des titres des 5 meilleurs films sous la forme d'un tableau.
  */
 exports.getBestMovies = function (number) {
-    if (!number) {
-        number = 5;
-    } else if (number < 2 ) {
-        number = 2;
-    } else if (number > 20) {
-        number = 20;
-    }
+    number = verifyNumber(number);
     return new Promise((resolve, reject) => {
         remote.getPopularMovies()
             .then(apiResponse => {
@@ -64,4 +59,95 @@ exports.recapMovie = function (movieTitle) {
         resolve('blablablabla');
         if (false) reject('dsfgsd');
     });
+}
+
+/** 
+ * Retourne une liste de films en fonction de critères passés par l'tuilisateur. 
+ * Si l'API ne renvois aucun film, la méthode résout un message d'information en chaine de caractères. 
+ * Rejette un message d'erreur en cas d'erreur de connection avec l'API. 
+ * résout un message d'erreur si la liste de genre est vide. 
+ * 
+ * @param {*} genreNameList requis, liste des genres en tableau de chaine de caractères. Contient au moins 1 élément
+ * @param {*} year optionel, année de sortie en chaine de caractères
+ * @param {*} period optionel, période de temps sous la forme d'un tableau de chaine de caractères ([date_début, date_fin])
+ * @param {*} personList optionel, liste de noms de personnes en chaine de caractères (acteurs ou personnel ayant participé au film)
+ * @param {*} number optionel, nombre de résultats souhaités
+*/
+exports.getMoviesByCriteria = function(genreNameList, year, period, crew, personList, number) {
+    number = verifyNumber(number);
+    return new Promise((resolve, reject) => {
+        if (genreNameList.length === 0) {
+            resolve('J\'ai besoin de connaître le genre de films que tu aime');
+        } else {
+            remote.getGenres()
+                .then((allGenresList) => {
+                    // Récupération de la liste des genres recherchés
+                    let searchedGenreList = [];
+                    for (let i = 0; i < genreNameList.length; i++) {
+                        for (let j = 0; j < allGenresList.length; j++) {
+                            if (genreNameList[i].match(new RegExp(`${allGenresList[j].name}`, 'gi'))) {
+                                searchedGenreList.push(allGenresList[j]);
+                                break;
+                            }
+                        }
+                    }
+                    // TODO: Traitement de l'année ou de la période demandée
+                    let searchedPeriod;
+                    // récupération de la liste des personnes souhaitées
+                    let promiseArray = [];
+                    personList.forEach((personName) => {
+                        promiseArray.push(new Promise((resolveMap) => {
+                            remote.getPersonByName(personName)
+                                .then((resolvedPerson) => {
+                                    if (typeof resolvedPerson != 'undefined' && resolvedPerson != null) {
+                                        resolveMap(resolvedPerson);
+                                    }
+                                })
+                                .catch(() => {
+                                    reject(apiErrorMessage);
+                                });
+                        }));
+                    });
+                    Promise.all(promiseArray)
+                        .then((searchedPersonList) => {
+                            remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
+                                .then((movieList) => {
+                                    let finalMovieList = [];
+                                    if (movieList.length != 0) {
+
+                                    } else if (movieList.length === 1) {
+                                        
+                                    } else {
+                                        for (let k = 0; k < movieList.length; k++) {
+                                            finalMovieList.push(movieList[k]);
+                                        }
+                                    }
+                                })
+                                .catch((err) => {
+                                    reject(apiErrorMessage);
+                                });
+                        });
+                })
+                .catch(() => {
+                    reject(apiErrorMessage);
+                });
+        }
+    });
+}
+
+/**
+ * Vérifie que le nombre de résultats souhaité est bien compris entre 2 et 20 inclus. 
+ * Retourne le nombre original si correcte, le nombre corrigé sinon. 
+ * 
+ * @param {*} number requis, nombre de résultats souhaités
+ */
+function verifyNumber(number) {
+    if (!number) {
+        number = 5;
+    } else if (number < 2 ) {
+        number = 2;
+    } else if (number > 20) {
+        number = 20;
+    }
+    return number;
 }

@@ -2,6 +2,7 @@ const sinon = require('sinon');
 const actionHandlers = require('../../../app/controlers/actionHandlers');
 const business = require('../../../app/business/movies');
 const googleFormatter = require('../../../app/responseFormatter/googleFormatter');
+const Movie = require('../../../app/models/movie');
 
 describe('actionHandlers', () => {
     let inputName = '';
@@ -48,6 +49,30 @@ describe('actionHandlers', () => {
         afterAll(() => {
             stubBuildMoviesListItems.restore();
             stubBuildSimpleResponse.restore();
+        });
+    });
+    describe('#input.movies.unguided', () => {
+        inputName = actionHandlers.actionNames.INPUT_MOVIES_UNGUIDED;
+        it('Doit appeller la méthode buildMoviesListItems de la couche de présentation', () => {
+            // TODO: Doit appeller la méthode buildMoviesListItems de la couche de présentation
+        });
+        it('Doit appeller la méthode getMoviesByCriteria de la couche business', () => {
+            // TODO: Doit appeller la méthode getMoviesByCriteria de la couche business
+        });
+        it('Doit passer en paramètre une liste de noms de genre à la méthode getMoviesByCriteria', () => {
+            // TODO: Doit passer en paramètre une liste de noms de genre à la méthode getMoviesByCriteria
+        });
+        it('Doit passser en paramètre une liste d\'acteurs à la méthode getMoviesByCriteria', () => {
+            // TODO: Doit passser en paramètre une liste d\'acteurs à la méthode getMoviesByCriteria
+        });
+        it('Doit passser en paramètre un nom de réalisateur à la méthode getMoviesByCriteria', () => {
+            // TODO: Doit passser en paramètre un nom de réalisateur à la méthode getMoviesByCriteria
+        });
+        it('Doit passser en paramètre une année de sortie ou un période à la méthode getMoviesByCriteria', () => {
+            // TODO: Doit passser en paramètre une année de sortie ou un période à la méthode getMoviesByCriteria
+        });
+        it('Doit retourner un message d\'erreur en chaine de caractère en cas d\'erreur de la couche business', () => {
+            // TODO: Doit retourner un message d\'erreur en chaine de caractère en cas d\'erreur de la couche business
         });
     });
 });

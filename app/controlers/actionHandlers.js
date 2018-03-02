@@ -2,6 +2,7 @@ const { AssistantApp, DialogflowApp } = require('actions-on-google');
 const businessModule = require('../business/movies');
 const googleFormatter = require('../responseFormatter/googleFormatter');
 const actionNames = {
+    INPUT_MOVIES_UNGUIDED: 'input.movies.unguided',
     INPUT_MOVIES_POPULAR: 'input.movies.popular',
     INPUT_MOVIE_RECAP: 'input.movie.recap',
     INPUT_WELCOME: 'input.welcome',
@@ -15,7 +16,10 @@ exports.actionNames = actionNames;
  exports.actionHandlers = function (action) {
      let functionHandler;
      switch (action) {
-         case actionNames.INPUT_MOVIES_POPULAR:
+        case actionNames.INPUT_MOVIES_UNGUIDED:
+             functionHandler = inputMoviesUnguidedHandler;
+             break;
+        case actionNames.INPUT_MOVIES_POPULAR:
              functionHandler = inputMoviesPopularHandler;
              break;
          case actionNames.INPUT_MOVIE_RECAP:
@@ -33,6 +37,12 @@ exports.actionNames = actionNames;
      }
      return functionHandler;
  }
+
+function inputMoviesUnguidedHandler(parameters) {
+    return new Promise((resolve, reject) => {
+        
+    });
+}
 
 function inputMoviesPopularHandler(parameters) {
     return new Promise((resolve, reject) => {

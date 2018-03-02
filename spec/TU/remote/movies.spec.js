@@ -73,4 +73,40 @@ describe('apiTheMovieDB', () => {
             stubHttps.restore();
         });
     });
+    describe('#discoverMovies', () => {
+        it('Doit rejetter un message d\'erreur si la liste de Genre en paramètre est vide', () => {
+            // TODO: Doit rejetter un message d\'erreur si la liste de Genre en paramètre est vide
+        });
+        it('Doit retourner une liste de Movie non vide si des films ont été trouvés', () => {
+            // TODO: Doit retourner une liste de Movie non vide si des films ont été trouvés
+        });
+        it('Doit retourner une liste de Movie vide si aucun film n\'a été trouvé', () => {
+            // TODO: Doit retourner une liste de Movie vide si aucun film n\'a été trouvé
+        });
+        it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', () => {
+            // TODO: Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API
+        });
+    });
+    describe('#getGenres', () => {
+        it('Doit retourner une liste de Genre en cas de succès', () => {
+            // TODO: Doit retourner une liste de Genre en cas de succès
+        });
+        it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', () => {
+            // TODO: Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API
+        });
+    });
+    describe('#getPersonByName', () => {
+        it('Doit retourner un objet Person en cas de succès', () => {
+            // TODO: Doit retourner un objet Person en cas de succès
+        });
+        it('Doit retourner null si la personne n\'est pas trouvée', () => {
+            // TODO: Doit retourner null si la personne n\'est pas trouvée
+        });
+        it('Doit retourner le bon nom de personne en cas de succès', () => {
+            // TODO: Doit retourner le bon nom de personne en cas de succès
+        });
+        it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', () => {
+            // TODO: Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API
+        });
+    });
 });
