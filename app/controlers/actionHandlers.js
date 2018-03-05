@@ -1,13 +1,13 @@
 const { AssistantApp, DialogflowApp } = require('actions-on-google');
 const businessModule = require('../business/movies');
 const googleFormatter = require('../responseFormatter/googleFormatter');
-const actionNames = {
+let actionNames = {
     INPUT_MOVIES_UNGUIDED: 'input.movies.unguided',
     INPUT_MOVIES_POPULAR: 'input.movies.popular',
     INPUT_MOVIE_RECAP: 'input.movie.recap',
     INPUT_WELCOME: 'input.welcome',
     INPUT_UNKNOWN: 'input.unknown'
-}
+};
 /** Liste des noms d'action paramétrés dans la partie fullfilment des intents dans Dialogflow. */
 exports.actionNames = actionNames;
 /** 
@@ -47,10 +47,10 @@ function inputMoviesUnguidedHandler(parameters) {
         if (!parameters.persons) parameters.persons = [];
         if (!parameters.number) parameters.number = null;
         businessModule.getMoviesByCriteria(
-            parameters.genres, 
+            parameters.genres,
             parameters.year,
-            parameters.period, 
-            parameters.persons, 
+            parameters.period,
+            parameters.persons,
             parameters.number)
             .then((movieList) => {
                 console.log('controler movie list', movieList)
@@ -64,13 +64,17 @@ function inputMoviesUnguidedHandler(parameters) {
 }
 
 function inputMoviesPopularHandler(parameters) {
+    console.log('controler popular', parameters);
     return new Promise((resolve, reject) => {
         businessModule.getBestMovies(parameters.number)
             .then(moviesList => {
+                console.log('controler popular movies', moviesList)
                 let formatedResponse = googleFormatter.buildMoviesListItems(moviesList);
                 resolve(formatedResponse);
             })
-            .catch(errorMessage => reject(googleFormatter.buildSimpleResponse(errorMessage.name)));
+            .catch(errorMessage => {
+                reject(googleFormatter.buildSimpleResponse(errorMessage.name));
+            });
     });
 }
 

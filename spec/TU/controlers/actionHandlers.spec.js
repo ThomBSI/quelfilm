@@ -5,12 +5,10 @@ const googleFormatter = require('../../../app/responseFormatter/googleFormatter'
 const Movie = require('../../../app/models/movie');
 
 describe('actionHandlers', () => {
-    let inputName = '';
     let stubBuildMoviesListItems, stubBuildSimpleResponse;
     describe('#input.movies.popular', () => {
-        inputName = actionHandlers.actionNames.INPUT_MOVIES_POPULAR;
         let stubGetBestMovies;
-        let params = {}
+        let params = {};
         beforeEach(() => {
             stubGetBestMovies = sinon.stub(business, 'getBestMovies');
         });
@@ -20,7 +18,7 @@ describe('actionHandlers', () => {
             stubBuildMoviesListItems = sinon.stub(googleFormatter, 'buildMoviesListItems');
             stubBuildMoviesListItems.withArgs(movieList).returns(expectedGResponseList);
             stubGetBestMovies.resolves(movieList);
-            actionHandlers.actionHandlers(inputName)(params)
+            actionHandlers.actionHandlers('input.movies.popular')(params)
                 .then((response) => {
                     expect(response).toBe(expectedGResponseList);
                     done();
@@ -36,7 +34,7 @@ describe('actionHandlers', () => {
             stubBuildSimpleResponse = sinon.stub(googleFormatter, 'buildSimpleResponse');
             stubBuildSimpleResponse.withArgs(errorMessage).returns(expectedGresponseError);
             stubGetBestMovies.rejects(errorMessage);
-            actionHandlers.actionHandlers(inputName)(params)
+            actionHandlers.actionHandlers('input.movies.popular')(params)
                 .then((res) => fail('L\'action est suposée échouer...'))
                 .catch((error) => {
                     expect(error).toBe(expectedGresponseError);
@@ -44,14 +42,14 @@ describe('actionHandlers', () => {
                 });
         });
         afterEach(() => {
-            stubGetBestMovies.restore();
+            if (stubGetBestMovies.restore) stubGetBestMovies.restore();
         });
         afterAll(() => {
-            stubBuildMoviesListItems.restore();
-            stubBuildSimpleResponse.restore();
+            if (stubBuildMoviesListItems.restore) stubBuildMoviesListItems.restore();
+            if (stubBuildSimpleResponse.restore) stubBuildSimpleResponse.restore();
         });
     });
-    describe('#input.movies.unguided', () => {
+    xdescribe('#input.movies.unguided', () => {
         inputName = actionHandlers.actionNames.INPUT_MOVIES_UNGUIDED;
         it('Doit appeller la méthode buildMoviesListItems de la couche de présentation', () => {
             // TODO: Doit appeller la méthode buildMoviesListItems de la couche de présentation

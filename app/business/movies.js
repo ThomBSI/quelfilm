@@ -16,6 +16,7 @@ exports.getBestMovies = function (number) {
     return new Promise((resolve, reject) => {
         remote.getPopularMovies()
             .then(apiResponse => {
+                console.log('business call getPopularMovies', apiResponse)
                 if (typeof apiResponse != 'undefined') {
                     if(apiResponse.results.length === 0) resolve(new Array());
                     let moviesArray = [];

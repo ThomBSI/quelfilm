@@ -6,14 +6,16 @@ const https = require('https');
  */
 exports.sendHttps = function(url) {
     return new Promise((resolve, reject) => {
-        https.get(url, res => {
+        https.get(url, (res) => {
                 let body = '';
-                res.on('data', d => body += d);
+                res.on('data', (d) => body += d);
                 res.on('end', () => {
                     let resultObject = JSON.parse(body);
                     resolve(resultObject);
                 });
             })
-            .on('error', err => reject(err));
+            .on('error', (err) => {
+                reject(err);
+            });
     });
 }

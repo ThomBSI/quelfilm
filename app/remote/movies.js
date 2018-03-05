@@ -16,7 +16,13 @@ const apiDateFormat = 'YYYY-MM-DD';
 exports.getPopularMovies = function () {
     return new Promise((resolve, reject) => {
         const url = buildUrl('/movie/popular');
-        httpUtils.sendHttps(url).then(res => resolve(res)).catch(err => reject(err));
+        httpUtils.sendHttps(url)
+            .then((res) => {
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err)
+            });
     });
 }
 
@@ -158,7 +164,8 @@ exports.getPersonByName = function(personName) {
  * }
  */
 function buildUrl(endpoint, params) {
-    let url = `${apiUrl}${endpoint}?language=fr-FR&include_adult=false`;
+    if (!params) params = [];
+    let url = `${apiUrl}${endpoint}?api_key=${apiKey}&language=fr-FR&include_adult=false`;
     params.forEach((paramObj) => {
         url = `${url}&${paramObj.name}=${paramObj.value}`;
     });
