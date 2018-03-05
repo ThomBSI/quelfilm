@@ -51,26 +51,26 @@ describe('actionHandlers', () => {
     });
     xdescribe('#input.movies.unguided', () => {
         inputName = actionHandlers.actionNames.INPUT_MOVIES_UNGUIDED;
-        it('Doit appeller la méthode buildMoviesListItems de la couche de présentation', () => {
-            // TODO: Doit appeller la méthode buildMoviesListItems de la couche de présentation
+        TODO: it('Doit appeller la méthode buildMoviesListItems de la couche de présentation', () => {
+            
         });
-        it('Doit appeller la méthode getMoviesByCriteria de la couche business', () => {
-            // TODO: Doit appeller la méthode getMoviesByCriteria de la couche business
+        TODO: it('Doit appeller la méthode getMoviesByCriteria de la couche business', () => {
+            
         });
-        it('Doit passer en paramètre une liste de noms de genre à la méthode getMoviesByCriteria', () => {
-            // TODO: Doit passer en paramètre une liste de noms de genre à la méthode getMoviesByCriteria
+        TODO: it('Doit passer en paramètre une liste de noms de genre à la méthode getMoviesByCriteria', () => {
+            
         });
-        it('Doit passser en paramètre une liste d\'acteurs à la méthode getMoviesByCriteria', () => {
-            // TODO: Doit passser en paramètre une liste d\'acteurs à la méthode getMoviesByCriteria
+        TODO: it('Doit passser en paramètre une liste d\'acteurs à la méthode getMoviesByCriteria', () => {
+            
         });
-        it('Doit passser en paramètre un nom de réalisateur à la méthode getMoviesByCriteria', () => {
-            // TODO: Doit passser en paramètre un nom de réalisateur à la méthode getMoviesByCriteria
+        TODO: it('Doit passser en paramètre un nom de réalisateur à la méthode getMoviesByCriteria', () => {
+            
         });
-        it('Doit passser en paramètre une année de sortie ou un période à la méthode getMoviesByCriteria', () => {
-            // TODO: Doit passser en paramètre une année de sortie ou un période à la méthode getMoviesByCriteria
+        TODO: it('Doit passser en paramètre une année de sortie ou un période à la méthode getMoviesByCriteria', () => {
+            
         });
-        it('Doit retourner un message d\'erreur en chaine de caractère en cas d\'erreur de la couche business', () => {
-            // TODO: Doit retourner un message d\'erreur en chaine de caractère en cas d\'erreur de la couche business
+        TODO: it('Doit retourner un message d\'erreur en chaine de caractère en cas d\'erreur de la couche business', () => {
+            
         });
     });
 });

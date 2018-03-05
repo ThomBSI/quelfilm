@@ -16,7 +16,6 @@ exports.getBestMovies = function (number) {
     return new Promise((resolve, reject) => {
         remote.getPopularMovies()
             .then(apiResponse => {
-                console.log('business call getPopularMovies', apiResponse)
                 if (typeof apiResponse != 'undefined') {
                     if(apiResponse.results.length === 0) resolve(new Array());
                     let moviesArray = [];
@@ -75,7 +74,6 @@ exports.recapMovie = function (movieTitle) {
  * @param {*} number optionel, nombre de résultats souhaités
 */
 exports.getMoviesByCriteria = function(genreNameList, year, period, personList, number) {
-    console.log('business params', genreNameList, year, period, personList, number);
     number = verifyNumber(number);
     return new Promise((resolve, reject) => {
         if (genreNameList.length === 0) {
@@ -83,7 +81,6 @@ exports.getMoviesByCriteria = function(genreNameList, year, period, personList, 
         } else {
             remote.getGenres()
                 .then((allGenresList) => {
-                    console.log('business genres', allGenresList)
                     if (allGenresList.length === 0) {
                         resolve('Je n\'arrive pas à comprendre les genres de films que tu souhaite');
                     } else {
@@ -117,11 +114,9 @@ exports.getMoviesByCriteria = function(genreNameList, year, period, personList, 
                         if (promiseArray.length != 0) {
                             Promise.all(promiseArray)
                                 .then((searchedPersonList) => {
-                                    console.log('business persons', searchedPersonList)
                                     searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject);
                                 });
                         } else {
-                            console.log('business no persons')
                             searchMovies(searchedGenreList, searchedPeriod, [], resolve, reject);
                         }
                     }
@@ -153,7 +148,6 @@ function verifyNumber(number) {
 function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject) {
     remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
         .then((movieList) => {
-           console.log('business movies', movieList)
             let finalMovieList = [];
             if (movieList.length === 0) {
                 resolve('Aucun film n\'a été trouvé');

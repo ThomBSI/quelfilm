@@ -167,7 +167,6 @@ describe('businessMovies :', () => {
                 let stubTimePerson = sinon.stub(remoteMovies, 'getPersonName').callsFake((id, d, j) => {
                     return new Promise((resolve, reject) => {
                         setTimeout(() => {
-                            console.log(id, d, j);
                             Promise.resolve('Director name');
                         }, 500);
                     });

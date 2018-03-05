@@ -56,10 +56,8 @@ function buildSingleMovieOptionItem(movie) {
             .setTitle(movie.title)
             .setImage(movie.posterPath, movie.title);
         let description = '';
-        console.log('movie.releaseDate', movie.releaseDate)
         if (movie.releaseDate != null) description = `${movie.releaseDate.getFullYear()}`;
         if (movie.directorName != '') description = `${description} - de ${movie.directorName}`;
-        console.log('formatter description', description)
         if (description != '') item.setDescription(description);
     }
     return item;
