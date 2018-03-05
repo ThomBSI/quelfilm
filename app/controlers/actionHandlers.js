@@ -39,14 +39,21 @@ exports.actionHandlers = function (action) {
 }
 
 function inputMoviesUnguidedHandler(parameters) {
+    console.log('controler params', parameters)
     return new Promise((resolve, reject) => {
+        if (!parameters.genres) parameters.genres = [];
+        if (!parameters.year) parameters.year = null;
+        if (!parameters.period) parameters.period = [];
+        if (!parameters.persons) parameters.persons = [];
+        if (!parameters.number) parameters.number = null;
         businessModule.getMoviesByCriteria(
             parameters.genres, 
-            parameters.year, 
+            parameters.year,
             parameters.period, 
             parameters.persons, 
             parameters.number)
             .then((movieList) => {
+                console.log('controler movie list', movieList)
                 let formatedResponse = googleFormatter.buildMoviesListItems(movieList);
                 resolve(formatedResponse);
             })

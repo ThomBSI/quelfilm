@@ -74,6 +74,7 @@ exports.recapMovie = function (movieTitle) {
  * @param {*} number optionel, nombre de résultats souhaités
 */
 exports.getMoviesByCriteria = function(genreNameList, year, period, personList, number) {
+    console.log('business params', genreNameList, year, period, personList, number);
     number = verifyNumber(number);
     return new Promise((resolve, reject) => {
         if (genreNameList.length === 0) {
@@ -81,52 +82,48 @@ exports.getMoviesByCriteria = function(genreNameList, year, period, personList, 
         } else {
             remote.getGenres()
                 .then((allGenresList) => {
-                    // Récupération de la liste des genres recherchés
-                    let searchedGenreList = [];
-                    for (let i = 0; i < genreNameList.length; i++) {
-                        for (let j = 0; j < allGenresList.length; j++) {
-                            if (genreNameList[i].match(new RegExp(`${allGenresList[j].name}`, 'gi'))) {
-                                searchedGenreList.push(allGenresList[j]);
-                                break;
+                    console.log('business genres', allGenresList)
+                    if (allGenresList.length === 0) {
+                        resolve('Je n\'arrive pas à comprendre les genres de films que tu souhaite');
+                    } else {
+                        // Récupération de la liste des genres recherchés
+                        let searchedGenreList = [];
+                        for (let i = 0; i < genreNameList.length; i++) {
+                            for (let j = 0; j < allGenresList.length; j++) {
+                                if (genreNameList[i].match(new RegExp(`${allGenresList[j].name}`, 'gi'))) {
+                                    searchedGenreList.push(allGenresList[j]);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    // TODO: Traitement de l'année ou de la période demandée
-                    let searchedPeriod;
-                    // récupération de la liste des personnes souhaitées
-                    let promiseArray = [];
-                    personList.forEach((personName) => {
-                        promiseArray.push(new Promise((resolveMap) => {
-                            remote.getPersonByName(personName)
-                                .then((resolvedPerson) => {
-                                    if (typeof resolvedPerson != 'undefined' && resolvedPerson != null) {
-                                        resolveMap(resolvedPerson);
-                                    }
-                                })
-                                .catch(() => {
-                                    reject(apiErrorMessage);
-                                });
-                        }));
-                    });
-                    Promise.all(promiseArray)
-                        .then((searchedPersonList) => {
-                            remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
-                                .then((movieList) => {
-                                    let finalMovieList = [];
-                                    if (movieList.length != 0) {
-
-                                    } else if (movieList.length === 1) {
-                                        
-                                    } else {
-                                        for (let k = 0; k < movieList.length; k++) {
-                                            finalMovieList.push(movieList[k]);
+                        // TODO: Traitement de l'année ou de la période demandée
+                        let searchedPeriod = year;
+                        // récupération de la liste des personnes souhaitées
+                        let promiseArray = [];
+                        personList.forEach((personName) => {
+                            promiseArray.push(new Promise((resolveMap) => {
+                                remote.getPersonByName(personName)
+                                    .then((resolvedPerson) => {
+                                        if (typeof resolvedPerson != 'undefined' && resolvedPerson != null) {
+                                            resolveMap(resolvedPerson);
                                         }
-                                    }
-                                })
-                                .catch((err) => {
-                                    reject(apiErrorMessage);
-                                });
+                                    })
+                                    .catch(() => {
+                                        console.log(`api error on ${personName}`);
+                                    });
+                            }));
                         });
+                        if (promiseArray.length != 0) {
+                            Promise.all(promiseArray)
+                                .then((searchedPersonList) => {
+                                    console.log('business persons', searchedPersonList)
+                                    searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject);
+                                });
+                        } else {
+                            console.log('business no persons')
+                            searchMovies(searchedGenreList, searchedPeriod, [], resolve, reject);
+                        }
+                    }
                 })
                 .catch(() => {
                     reject(apiErrorMessage);
@@ -150,4 +147,23 @@ function verifyNumber(number) {
         number = 20;
     }
     return number;
+}
+
+function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject) {
+    remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
+        .then((movieList) => {
+           console.log('business movies', movieList)
+            let finalMovieList = [];
+            if (movieList.length === 0) {
+                resolve('Aucun film n\'a été trouvé');
+            } else {
+                for (let k = 0; k < movieList.length; k++) {
+                    finalMovieList.push(movieList[k]);
+                }
+            }
+            resolve(finalMovieList);
+        })
+        .catch((err) => {
+            reject(apiErrorMessage);
+        });
 }

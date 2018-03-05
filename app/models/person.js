@@ -1,8 +1,8 @@
-function Person(personId) {
+function Person(personId, personName) {
     this.personId = personId;
+    this.personName = personName;
 }
 
-Person.name = '';
 Person.profilePath = '';
 
 module.exports = Person;

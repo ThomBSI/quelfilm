@@ -53,6 +53,7 @@ exports.getPersonName = function (movieId, departmentName, jobName) {
  * 
 */
 exports.discoverMovies = function(genresList, period, personsList) {
+    console.log('remote params', genresList, period, personsList)
     return new Promise((resolve, reject) => {
         const params = [];
         let genresIds = '';
@@ -66,7 +67,7 @@ exports.discoverMovies = function(genresList, period, personsList) {
             params.push({name: 'release_date.gte', value: dateStart});
             params.push({name: 'release_date.lte', value: dateEnd});
         } else {
-            params.push({name: 'year', value: period});
+            if (period != null) params.push({name: 'year', value: period});
         }
         if(personsList.length != 0) {
             let personIds = '';
@@ -75,9 +76,11 @@ exports.discoverMovies = function(genresList, period, personsList) {
             });
             params.push({name: 'with_people', value: personIds})
         }
+        console.log('remote params array', params);
         const url = buildUrl('/discover/movie', params);
         httpUtils.sendHttps(url)
             .then((data) => {
+                console.log('remote', data)
                 if (typeof data != 'undefined') {
                     let movieList = data.results.map((movieObj) => {
                         return buildMovieFromApiObject(movieObj);
