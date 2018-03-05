@@ -41,9 +41,9 @@ exports.actionHandlers = function (action) {
 function inputMoviesUnguidedHandler(parameters) {
     console.log('controler params', parameters)
     return new Promise((resolve, reject) => {
+        let period;
         if (!parameters.genres) parameters.genres = [];
         if (!parameters.year) parameters.year = null;
-        if (!parameters.period) parameters.period = [];
         if (!parameters.persons) parameters.persons = [];
         if (!parameters.number) parameters.number = null;
         businessModule.getMoviesByCriteria(

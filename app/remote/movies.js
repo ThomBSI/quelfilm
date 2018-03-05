@@ -61,13 +61,19 @@ exports.getPersonName = function (movieId, departmentName, jobName) {
 exports.discoverMovies = function(genresList, period, personsList) {
     console.log('remote params', genresList, period, personsList)
     return new Promise((resolve, reject) => {
-        const params = [];
+        const params = new Array();
         let genresIds = '';
-        genresList.forEach((genre) => {
-            genresIds = `${genresIds},${genre.id}`;
+        genresList.forEach((genre, index) => {
+            if (index === 0) {
+                genresIds = `${genre.id}`;
+            } else {
+                genresIds = `${genresIds},${genre.id}`;
+            }
         });
-        params.push({name: 'with_genres', value: genresIds});
-        if (period.length != 0) {
+        console.log('genres ids', genresIds)
+        params.push({name: 'with_genres', value: `${genresIds}`});
+        console.log('remote params array 1', params);
+        if (Array.isArray(period)) {
             let dateStart = moment(period[0]).format(apiDateFormat);
             let dateEnd = moment(period[1]).format(apiDateFormat);
             params.push({name: 'release_date.gte', value: dateStart});
@@ -75,12 +81,17 @@ exports.discoverMovies = function(genresList, period, personsList) {
         } else {
             if (period != null) params.push({name: 'year', value: period});
         }
+        console.log('remote params array 2', params);
         if(personsList.length != 0) {
             let personIds = '';
-            personsList.forEach((person) => {
-                personIds = `${personIds},${person.personId}`;
+            personsList.forEach((person, index) => {
+                if (index === 0) {
+                    personIds = `${person.personId}`;
+                } else {
+                    personIds = `${personIds},${person.personId}`;
+                }
             });
-            params.push({name: 'with_people', value: personIds})
+            params.push({name: 'with_people', value: `${personIds}`})
         }
         console.log('remote params array', params);
         const url = buildUrl('/discover/movie', params);
@@ -175,7 +186,7 @@ function buildUrl(endpoint, params) {
 function buildMovieFromApiObject(apiMovieObject) {
     let movie = new Movie();
     movie.id = apiMovieObject.id;
-    movie.posterPath = apiMovieObject.poster_path;
+    movie.posterPath = `https://image.tmdb.org/t/p/w500${apiMovieObject.poster_path}`;
     movie.title = apiMovieObject.title;
     movie.abstract = apiMovieObject.overview;
     movie.releaseDate = new Date(apiMovieObject.release_date);
