@@ -73,7 +73,7 @@ exports.recapMovie = function (movieTitle) {
  * @param {*} personList optionel, liste de noms de personnes en chaine de caractères (acteurs ou personnel ayant participé au film)
  * @param {*} number optionel, nombre de résultats souhaités
 */
-exports.getMoviesByCriteria = function(genreNameList, year, period, crew, personList, number) {
+exports.getMoviesByCriteria = function(genreNameList, year, period, personList, number) {
     number = verifyNumber(number);
     return new Promise((resolve, reject) => {
         if (genreNameList.length === 0) {

@@ -13,34 +13,46 @@ exports.actionNames = actionNames;
 /** 
  * Appel le bon gestionnaire en fonction du nom de l'action passé en paramètre.
  */
- exports.actionHandlers = function (action) {
-     let functionHandler;
-     switch (action) {
+exports.actionHandlers = function (action) {
+    let functionHandler;
+    switch (action) {
         case actionNames.INPUT_MOVIES_UNGUIDED:
-             functionHandler = inputMoviesUnguidedHandler;
-             break;
+            functionHandler = inputMoviesUnguidedHandler;
+            break;
         case actionNames.INPUT_MOVIES_POPULAR:
-             functionHandler = inputMoviesPopularHandler;
-             break;
-         case actionNames.INPUT_MOVIE_RECAP:
-             functionHandler = inputMovieRecapHandler;
-             break;
-         case actionNames.INPUT_WELCOME:
-             functionHandler = inputWelcomeHandler;
-             break;
-         case actionNames.INPUT_UNKNOWN:
-             functionHandler = inputUnknownHandler;
-             break;
-         default:
-             functionHandler = defaultHandler;
-             break;
-     }
-     return functionHandler;
- }
+            functionHandler = inputMoviesPopularHandler;
+            break;
+        case actionNames.INPUT_MOVIE_RECAP:
+            functionHandler = inputMovieRecapHandler;
+            break;
+        case actionNames.INPUT_WELCOME:
+            functionHandler = inputWelcomeHandler;
+            break;
+        case actionNames.INPUT_UNKNOWN:
+            functionHandler = inputUnknownHandler;
+            break;
+        default:
+            functionHandler = defaultHandler;
+            break;
+    }
+    return functionHandler;
+}
 
 function inputMoviesUnguidedHandler(parameters) {
     return new Promise((resolve, reject) => {
-        
+        businessModule.getMoviesByCriteria(
+            parameters.genres, 
+            parameters.year, 
+            parameters.period, 
+            parameters.persons, 
+            parameters.number)
+            .then((movieList) => {
+                let formatedResponse = googleFormatter.buildMoviesListItems(movieList);
+                resolve(formatedResponse);
+            })
+            .catch((errorMessage) => {
+                reject(googleFormatter.buildSimpleResponse(errorMessage.name));
+            });
     });
 }
 

@@ -269,7 +269,7 @@ describe('businessMovies :', () => {
             spy = sinon.spy();
         });
         afterAll(() => {
-            spy.restore();
+            if (spy.restore) spy.restore();
         });
         beforeEach(() => {
             spy.resetHistory();
@@ -282,6 +282,8 @@ describe('businessMovies :', () => {
         });
         it('Doit appeller la méthode discoverMovies de la couche remote', (done) => {
             stubDiscoverMovies.restore();
+            let mockRemote = sinon.mock(remoteMovies);
+            let expDiecover = mockRemote.expects('discoverMovies')
             stubDiscoverMovies = sinon.stub(remoteMovies, 'discoverMovies').callsFake(() => {
                 return new Promise((resolve, reject) => {
                     spy();
