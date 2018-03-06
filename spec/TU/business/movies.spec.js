@@ -348,7 +348,7 @@ describe('businessMovies :', () => {
             expGetGenre = mockRemote.expects('getGenres').resolves(paramGenreList);
             expGetPersonByName = mockRemote.expects('getPersonByName').never();
             expDiecover = mockRemote.expects('discoverMovies').resolves(apiMovieList);
-                
+            
             businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, [], number)
                 .then((res) => {
                     expGetPersonByName.verify();

@@ -1,4 +1,5 @@
-function Movie() {}
+function Movie() {
+}
 
 Movie.prototype.id = '';
 Movie.prototype.title = '';
