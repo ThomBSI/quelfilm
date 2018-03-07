@@ -114,6 +114,7 @@ exports.getMoviesByCriteria = function(genreNameList, year, period, personList, 
                         if (promiseArray.length != 0) {
                             Promise.all(promiseArray)
                                 .then((searchedPersonList) => {
+                                    console.log('searchedPersonList', searchedPersonList);
                                     searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject);
                                 });
                         } else {
@@ -146,8 +147,10 @@ function verifyNumber(number) {
 }
 
 function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject) {
+    console.log('COUCOU')
     remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
         .then((movieList) => {
+            console.log(movieList)
             let finalMovieList = [];
             if (movieList.length === 0) {
                 resolve('Aucun film n\'a été trouvé');

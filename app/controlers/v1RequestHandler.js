@@ -59,16 +59,26 @@ function actionHandlers(action) {
 }
 
 function inputMoviesUnguidedHandler(parameters) {
+    console.log('parameters', parameters);
     let period;
+    let personsNames = [];
     if (!parameters.genres) parameters.genres = [];
     if (!parameters.year) parameters.year = null;
-    if (!parameters.persons) parameters.persons = [];
+    // if (parameters.givenName && parameters.lastName) {
+    //     if (parameters.givenName.length === parameters.lastName.length) {
+    //         parameters.givenName.forEach((givenName, index) => {
+    //             let fullName = `${givenName} ${parameters.lastName[index]}`;
+    //             personsNames.push(fullName);
+    //         });
+    //     }
+    // }
+    if (!parameters.people) parameters.people = [];
     if (!parameters.number) parameters.number = null;
     businessModule.getMoviesByCriteria(
         parameters.genres,
         parameters.year,
         parameters.period,
-        parameters.persons,
+        parameters.people,
         parameters.number)
         .then((movieList) => {
             let formatedResponse = googleFormatter.buildMoviesListItems(movieList);
