@@ -1,12 +1,9 @@
 const remote = require('../remote/movies');
 const Movie = require('../models/movie');
 const tmdbRef = require('../config/tmdb');
-
-const apiPopularMoviesErrorMessage = 'Je n\'arrive à récupérer les films auprès du serveur...';
-const apiNoResultsErrorMessage = 'Je n\'ai trouvé aucun film correspondant à votre recherche...';
-const apiErrorMessage = 'Je rencontre une erreur... Tu peut réessayer plus tard ?';
-
-const urlPoster = 'https://image.tmdb.org/t/p/w500';
+const { text } = require('../resources/fr-FR');
+const { conf } = require('../config/conf');
+const { global } = require('../config/tmdb');
 
 /*
  * Retourne la liste des titres des 5 meilleurs films sous la forme d'un tableau.
@@ -26,7 +23,7 @@ exports.getBestMovies = function (number) {
                                 let movieObject = new Movie();
                                 movieObject.title = movie[tmdbRef.moviePopular.title];
                                 movieObject.id = movie[tmdbRef.moviePopular.id];
-                                movieObject.posterPath = `${urlPoster}${movie[tmdbRef.moviePopular.posterPath]}`;
+                                movieObject.posterPath = `${global.urlPoster}${movie[tmdbRef.moviePopular.posterPath]}`;
                                 movieObject.releaseDate = movie[tmdbRef.moviePopular.releaseDate];
                                 remote.getPersonName(movieObject.id, 'crew', 'Director')
                                     .then(dirName => {
@@ -47,7 +44,7 @@ exports.getBestMovies = function (number) {
                         });
                 }
             })
-            .catch((err) => reject(apiPopularMoviesErrorMessage));
+            .catch((err) => reject(text.apiPopularMoviesErrorMessage));
     });
 }
 
@@ -70,62 +67,30 @@ exports.recapMovie = function (movieTitle) {
  * @param {*} genreNameList requis, liste des genres en tableau de chaine de caractères. Contient au moins 1 élément
  * @param {*} year optionel, année de sortie en chaine de caractères
  * @param {*} period optionel, période de temps sous la forme d'un tableau de chaine de caractères ([date_début, date_fin])
- * @param {*} personList optionel, liste de noms de personnes en chaine de caractères (acteurs ou personnel ayant participé au film)
+ * @param {*} personNameList optionel, liste de noms de personnes en chaine de caractères (acteurs ou personnel ayant participé au film)
  * @param {*} number optionel, nombre de résultats souhaités
 */
-exports.getMoviesByCriteria = function(genreNameList, year, period, personList, number) {
+exports.getMoviesByCriteria = function(genreNameList, year, period, personNameList, number) {
     number = verifyNumber(number);
     return new Promise((resolve, reject) => {
-        if (genreNameList.length === 0) {
-            resolve('J\'ai besoin de connaître le genre de films que tu aime');
-        } else {
-            remote.getGenres()
-                .then((allGenresList) => {
-                    if (allGenresList.length === 0) {
-                        resolve('Je n\'arrive pas à comprendre les genres de films que tu souhaite');
-                    } else {
-                        // Récupération de la liste des genres recherchés
-                        let searchedGenreList = [];
-                        for (let i = 0; i < genreNameList.length; i++) {
-                            for (let j = 0; j < allGenresList.length; j++) {
-                                if (genreNameList[i].match(new RegExp(`${allGenresList[j].name}`, 'gi'))) {
-                                    searchedGenreList.push(allGenresList[j]);
-                                    break;
-                                }
-                            }
+        searchGenres(genreNameList, {
+            success: (genreList) => {
+                let searchedPeriod = year;
+                searchPersons(personNameList, (personList) => {
+                    searchMovies(genreList, searchedPeriod, personList, {
+                        success: (movieList) => {
+                            resolve(movieList);
+                        },
+                        error: () => {
+                            reject(text.apiErrorMessage);
                         }
-                        // TODO: Traitement de l'année ou de la période demandée
-                        let searchedPeriod = year;
-                        // récupération de la liste des personnes souhaitées
-                        let promiseArray = [];
-                        personList.forEach((personName) => {
-                            promiseArray.push(new Promise((resolveMap) => {
-                                remote.getPersonByName(personName)
-                                    .then((resolvedPerson) => {
-                                        if (typeof resolvedPerson != 'undefined' && resolvedPerson != null) {
-                                            resolveMap(resolvedPerson);
-                                        }
-                                    })
-                                    .catch(() => {
-                                        console.log(`api error on ${personName}`);
-                                    });
-                            }));
-                        });
-                        if (promiseArray.length != 0) {
-                            Promise.all(promiseArray)
-                                .then((searchedPersonList) => {
-                                    console.log('searchedPersonList', searchedPersonList);
-                                    searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject);
-                                });
-                        } else {
-                            searchMovies(searchedGenreList, searchedPeriod, [], resolve, reject);
-                        }
-                    }
-                })
-                .catch(() => {
-                    reject(apiErrorMessage);
+                    });
                 });
-        }
+            },
+            error: () => {
+                reject(text.apiErrorMessage);
+            }
+        });
     });
 }
 
@@ -146,22 +111,88 @@ function verifyNumber(number) {
     return number;
 }
 
-function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, resolve, reject) {
-    console.log('COUCOU')
+/**
+ * Appel le callbacks.succes avec une liste vide si la liste d'entrée l'est aussi. 
+ * @param {*} genreNameList 
+ * @param {*} callbacks 
+ */
+function searchGenres(genreNameList, callbacks) {
+    let searchedGenreList = [];
+    if (genreNameList.length != 0) {
+        remote.getGenres()
+            .then((allGenresList) => {
+                for (let i = 0; i < genreNameList.length; i++) {
+                    for (let j = 0; j < allGenresList.length; j++) {
+                        if (genreNameList[i].match(new RegExp(`${allGenresList[j].name}`, 'gi'))) {
+                            searchedGenreList.push(allGenresList[j]);
+                            break;
+                        }
+                    }
+                }
+            })
+            .catch(() => {
+                callbacks.error()
+            });
+    }
+    callbacks.success(searchedGenreList);
+}
+
+/**
+ * Le callback retourne une liste de @Person, vide si aucun résultat ou erreurs au niveau de l'API. 
+ * 
+ * @param {*} personNameList 
+ * @param {*} callback 
+ */
+function searchPersons(personNameList, callback) {
+    let searchedPersonList = new Array();
+    if (personNameList.length != 0) {
+        let promiseArray = [];
+        personNameList.forEach((personName) => {
+            promiseArray.push(new Promise((resolveMap) => {
+                remote.getPersonByName(personName)
+                    .then((resolvedPerson) => {
+                        if (typeof resolvedPerson != 'undefined') {
+                            resolveMap(resolvedPerson);
+                        }
+                    })
+                    .catch(() => {
+                        console.log(`api error on ${personName}`);
+                    });
+            }));
+        });
+        if (promiseArray.length != 0) {
+            Promise.all(promiseArray)
+                .then((resolvedSearchedPersonList) => {
+                    resolvedSearchedPersonList.forEach((singlePerson) => {
+                        if (singlePerson != null) {
+                            searchedPersonList.push(singlePerson);
+                        }
+                    });
+                    callback(searchedPersonList);
+                })
+                .catch(() => {});
+        } else {
+            callback(searchedPersonList);
+        }
+    } else {
+        callback(searchedPersonList);
+    }
+}
+
+function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, callbacks) {
     remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
         .then((movieList) => {
-            console.log(movieList)
             let finalMovieList = [];
             if (movieList.length === 0) {
-                resolve('Aucun film n\'a été trouvé');
+                callbacks.success(text.apiNoResultsErrorMessage);
             } else {
                 for (let k = 0; k < movieList.length; k++) {
                     finalMovieList.push(movieList[k]);
                 }
             }
-            resolve(finalMovieList);
+            callbacks.success(finalMovieList);
         })
         .catch((err) => {
-            reject(apiErrorMessage);
+            callbacks.error();
         });
 }

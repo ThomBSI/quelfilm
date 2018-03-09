@@ -1,4 +1,5 @@
 const DialogflowApp = require('actions-on-google').DialogflowApp;
+const { text, textDev } = require('../resources/fr-FR');
 
 /**
  * Construit une liste de films sous la forme d'une liste de cartes google assistant. 
@@ -11,10 +12,10 @@ const DialogflowApp = require('actions-on-google').DialogflowApp;
  */
 exports.buildMoviesListItems = function(moviesList) {
     let response = null;
-    let emptyMessage = exports.buildSimpleResponse('Aucun film n\'a pus être tourvé');
+    let emptyMessage = exports.buildSimpleResponse(text.apiNoResultsErrorMessage);
     let app = new DialogflowApp();
     if (moviesList.length > 20) {
-        throw new Error('La liste doit comprendre moins de 20 films');
+        throw new Error(textDev.listTooLong);
     } else if (moviesList.length === 1) {
         response = buildrichResponseBasicCard(moviesList[0]);
     } else if (moviesList.length != 0) {
@@ -25,10 +26,10 @@ exports.buildMoviesListItems = function(moviesList) {
                 listOptions.push(item);
             }
         });
-        if(listOptions.length === 0) {
+        if (listOptions.length === 0) {
             response = emptyMessage;
         } else {
-            response = app.buildList(`En voila ${moviesList.length}`).addItems(listOptions);
+            response = app.buildList(`${text.resultCountIntroduction}${moviesList.length}`).addItems(listOptions);
         }
     } else {
         response = emptyMessage;

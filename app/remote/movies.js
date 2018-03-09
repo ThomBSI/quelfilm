@@ -6,9 +6,7 @@ const Movie = require('../models/movie');
 const Genre = require('../models/genre');
 const Person = require('../models/person');
 
-const apiKey = 'bc1b9e5030979ddbb65d3eca646e29f9';
-const apiUrl = 'https://api.themoviedb.org/3';
-const apiDateFormat = 'YYYY-MM-DD';
+const { global } = require('../config/tmdb');
 
 /** 
  * Retourne les meilleurs films tels que retournés par l'API sous la forme d'un objet.
@@ -71,8 +69,8 @@ exports.discoverMovies = function(genresList, period, personsList) {
         });
         params.push({name: 'with_genres', value: `${genresIds}`});
         if (Array.isArray(period)) {
-            let dateStart = moment(period[0]).format(apiDateFormat);
-            let dateEnd = moment(period[1]).format(apiDateFormat);
+            let dateStart = moment(period[0]).format(global.apiDateFormat);
+            let dateEnd = moment(period[1]).format(global.apiDateFormat);
             params.push({name: 'release_date.gte', value: dateStart});
             params.push({name: 'release_date.lte', value: dateEnd});
         } else {
@@ -89,6 +87,7 @@ exports.discoverMovies = function(genresList, period, personsList) {
             });
             params.push({name: 'with_people', value: `${personIds}`})
         }
+        params.push({name: 'sort_by', value: 'vote_average.desc'});
         const url = buildUrl('/discover/movie', params);
         httpUtils.sendHttps(url)
             .then((data) => {
@@ -170,7 +169,7 @@ exports.getPersonByName = function(personName) {
  */
 function buildUrl(endpoint, params) {
     if (!params) params = [];
-    let url = `${apiUrl}${endpoint}?api_key=${apiKey}&language=fr-FR&include_adult=false`;
+    let url = `${global.apiUrl}${endpoint}?api_key=${global.apiKey}&language=fr-FR&include_adult=false`;
     params.forEach((paramObj) => {
         url = `${url}&${paramObj.name}=${paramObj.value}`;
     });
@@ -180,7 +179,7 @@ function buildUrl(endpoint, params) {
 function buildMovieFromApiObject(apiMovieObject) {
     let movie = new Movie();
     movie.id = apiMovieObject.id;
-    movie.posterPath = `https://image.tmdb.org/t/p/w500${apiMovieObject.poster_path}`;
+    movie.posterPath = `${global.urlPoster}${apiMovieObject.poster_path}`;
     movie.title = apiMovieObject.title;
     movie.abstract = apiMovieObject.overview;
     movie.releaseDate = new Date(apiMovieObject.release_date);

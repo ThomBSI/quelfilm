@@ -89,38 +89,41 @@ describe('apiTheMovieDB', () => {
         });
     });
     xdescribe('#discoverMovies', () => {
-        TODO: it('Doit rejetter un message d\'erreur si la liste de Genre en paramètre est vide', () => {
+        TODO: it('Doit rejetter un message d\'erreur si la liste de Genre en paramètre est vide', (done) => {
 
         });
-        TODO: it('Doit retourner une liste de Movie non vide si des films ont été trouvés', () => {
+        TODO: it('Doit retourner une liste de Movie non vide si des films ont été trouvés', (done) => {
             
         });
-        TODO: it('Doit retourner une liste de Movie vide si aucun film n\'a été trouvé', () => {
+        TODO: it('Doit retourner une liste de Movie vide si aucun film n\'a été trouvé', (done) => {
             
         });
-        TODO: it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', () => {
+        TODO: it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', (done) => {
             
         });
     });
     xdescribe('#getGenres', () => {
-        TODO: it('Doit retourner une liste de Genre en cas de succès', () => {
+        TODO: it('Prend un nom de genre en paramètre en chaine de caractère', (done) => {
             
         });
-        TODO: it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', () => {
+        TODO: it('Doit résoudre une liste de @Genre non vide en cas de succès', (done) => {
+            
+        });
+        TODO: it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', (done) => {
             
         });
     });
     xdescribe('#getPersonByName', () => {
-        TODO: it('Doit retourner un objet Person en cas de succès', () => {
+        TODO: it('Doit résoudre un objet Person en cas de succès', (done) => {
             
         });
-        TODO: it('Doit retourner null si la personne n\'est pas trouvée', () => {
+        TODO: it('Doit résoudre null si la personne n\'est pas trouvée', (done) => {
             
         });
-        TODO: it('Doit retourner le bon nom de personne en cas de succès', () => {
+        TODO: it('Doit résoudre le bon nom de personne en cas de succès', (done) => {
             
         });
-        TODO: it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', () => {
+        TODO: it('Doit rejeter une chaine de caractère en cas d\'erreur de connexion avec l\'API', (done) => {
             
         });
     });

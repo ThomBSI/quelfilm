@@ -270,174 +270,259 @@ describe('businessMovies :', () => {
         let paramGenreList = [new Genre(12, 'action'), new Genre(13, 'drame')];
         let paramPersonList = [new Person(231, 'John Doe'), new Person(589, 'Jean Gabin')];
         let apiMovieList = [new Movie(), new Movie()];
+        let end = (done) => {
+            remoteMovies.getGenres.restore();
+            remoteMovies.getPersonByName.restore();
+            remoteMovies.discoverMovies.restore();
+            done();
+        };
 
         // appel à l'API
-        TODO:it('Doit appeller la méthode discoverMovies de la couche remote une seule fois', (done) => {
-            let mock = sinon.mock(remoteMovies);
-            let exp = mock.expects('discoverMovies').once().resolves(apiMovieList);
-            mock.expects('getGenres').resolves(paramGenreList);
-            mock.expects('getPersonByName').withArgs(paramActorsNameList[0]).resolves(paramPersonList[0]);
-            mock.expects('getPersonByName').withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
-
+        it('Doit appeller la méthode discoverMovies de la couche remote une seule fois', (done) => {
+            let spyDiscover = sinon.spy(remoteMovies, 'discoverMovies');
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            sinon.stub(remoteMovies, 'getPersonByName')
+                .withArgs(paramActorsNameList[0]).resolves(paramPersonList[0])
+                .withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
+            let test = () => {
+                expect(spyDiscover.calledOnce).toBe(true);
+            };
             businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
                 .then((res) => {
-                    exp.verify();
-                    done();
+                    test();
+                    end();
                 })
                 .catch((err) => {
-                    fail(err);
-                    done();
+                    test();
+                    end();
                 });
-
-                mock.restore();
         });
 
         // genres
-        TODO:xit('Doit appeller la méthode getGenres de la couche remote autant de fois qu\'il y a de noms de genres passés en paramètre', (done) => {
+        it('Doit appeller la méthode getGenres de la couche remote une seule fois', (done) => {
+            let spyGenre = sinon.spy(remoteMovies, 'getGenres');
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            sinon.stub(remoteMovies, 'getPersonByName')
+                .withArgs(paramActorsNameList[0]).resolves(paramPersonList[0])
+                .withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
+            let test = () => {
+                expect(spyGenre.calledOnce).toBe(true);
+            };
             businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
                 .then((res) => {
-
+                    test();
+                    end();
                 })
                 .catch((err) => {
-                    fail(err);
-                    done();
+                    test();
+                    end();
                 });
         });
-        TODO:xit('Ne doit pas appeller la méthode getGenres de la couche remote aucun nom de genre n\'est passé en paramètre', () => {
-            
-        });
-        TODO:xit('Doit appeller la méthode getGenres de la couche remote une seule fois si et seulement si au moins un nom de genre est passé en paramètre', (done) => {
-            let mock = sinon.mock(remoteMovies);
-            let exp = mock.expects('discoverMovies')
-                .exactly(1)
-                .resolves(apiMovieList);
-            mock.expects('getGenres').resolves(paramGenreList)
-            mock.expects('getPersonByName').resolves(paramPersonList[0]);
-
-            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
-            .then((res) => {
-                expGetGenre.verify();
+        it('Ne doit pas appeller la méthode getGenres de la couche remote si aucun nom de genre n\'est passé en paramètre', (done) => {
+            let spyGenre = sinon.spy(remoteMovies, 'getGenres');
+            let test = () => {
+                expect(spyGenre.notCalled).toBe(true);
+            };
+            let end = () => {
+                remoteMovies.getGenres.restore();
                 done();
-            })
-            .catch((err) => {
-                fail(err);
-                done();
-            });
-
-            mock.restore();
-        });
-        xit('Doit quand même retourner une liste de film si la liste de nom de genre est vide', () => {
-            
-        });
-        TODO:xit('Doit résoudre une chaine de caractère si la liste de noms de genres en entrée est vide', (done) => {
-            mockRemote.restore();
-            mockRemote = sinon.mock(remoteMovies);
-            expGetGenre = mockRemote.expects('getGenres').never();
-            expGetPersonByName = mockRemote.expects('getPersonByName').never();
-            expDiecover = mockRemote.expects('discoverMovies').never();
-                
+            };
             businessMovies.getMoviesByCriteria([], paramYear, paramPeriod, paramActorsNameList, number)
                 .then((res) => {
-                    mockRemote.verify();
-                    expect(res).toEqual(jasmine.any(String));
-                    done();
+                    test();
+                    end();
                 })
                 .catch((err) => {
-                    fail(err);
-                    done();
+                    test();
+                    end();
                 });
         });
-        TODO:xit('Doit résoudre une chaine de caractère si la liste de genres retourné par l\'API est vide', (done) => {
-            mockRemote.restore();
-            mockRemote = sinon.mock(remoteMovies);
-            expGetGenre = mockRemote.expects('getGenres').resolves([]);
-            expGetPersonByName = mockRemote.expects('getPersonByName').never();
-            expDiecover = mockRemote.expects('discoverMovies').never();
-                
-            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
+        FIXME:it('Doit quand même résoudre une liste de film si la liste de nom de genre en entrée est vide', (done) => {
+            sinon.stub(remoteMovies, 'getPersonByName');
+            sinon.stub(remoteMovies, 'discoverMovies').resolves(apiMovieList)
+                .withArgs(paramActorsNameList[0]).resolves(paramPersonList[0])
+                .withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
+            let end = () => {
+                remoteMovies.getPersonByName.restore();
+                remoteMovies.discoverMovies.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria([], paramYear, paramPeriod, paramActorsNameList, number)
                 .then((res) => {
-                    mockRemote.verify();
-                    expect(res).toEqual(jasmine.any(String));
-                    done();
+                    expect(res).toEqual(apiMovieList);
+                    end();
                 })
                 .catch((err) => {
                     fail(err);
-                    done();
+                    end();
+                });
+        });
+        FIXME:it('Doit quand même résoudre une liste de film si la liste de nom de genre en entrée ne correspond à aucun genre géré par l\'API', (done) => {
+            sinon.stub(remoteMovies, 'getGenres').resolves([]);
+            sinon.stub(remoteMovies, 'getPersonByName');
+            sinon.stub(remoteMovies, 'discoverMovies').resolves(apiMovieList)
+                .withArgs(paramActorsNameList[0]).resolves(paramPersonList[0])
+                .withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
+            let end = () => {
+                remoteMovies.getPersonByName.restore();
+                remoteMovies.discoverMovies.restore();
+                remoteMovies.getGenres.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
+                .then((res) => {
+                    expect(res).toEqual(apiMovieList);
+                    end();
+                })
+                .catch((err) => {
+                    fail(err);
+                    end();
+                });
+        });
+        FIXME:it('Doit quand même résoudre une liste de film si la méthode getGenres rejette une erreur', (done) => {
+            sinon.stub(remoteMovies, 'discoverMovies').resolves(apiMovieList);
+            sinon.stub(remoteMovies, 'getGenres').rejects();
+            sinon.stub(remoteMovies, 'getPersonByName')
+                .withArgs(paramActorsNameList[0]).resolves(paramPersonList[0])
+                .withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
+            let end = () => {
+                remoteMovies.getGenres.restore();
+                remoteMovies.getPersonByName.restore();
+                remoteMovies.discoverMovies.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
+                .then((res) => {
+                    expect(res).toEqual(apiMovieList);
+                    end();
+                })
+                .catch((err) => {
+                    fail(err);
+                    end();
                 });
         });
 
         // personnes
-        xit('Doit appeller la méthode getPersonByName de la couche remote si et seulement si au moins un nom est passé en paramètre', (done) => {
+        it('Ne doit pas appeller la méthode getPersonByName de la couche remote si aucun nom de personne n\'est passé en paramètre', (done) => {
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            let spyPerson = sinon.spy(remoteMovies, 'getPersonByName');
+            let test = () => {
+                expect(spyPerson.notCalled).toBe(true);
+            };
+            let end = () => {
+                remoteMovies.getGenres.restore();
+                remoteMovies.getPersonByName.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, [], number)
+                .then((res) => {
+                    test();
+                    end();
+                })
+                .catch((err) => {
+                    test();
+                    end();
+                });
+        });
+        it('Doit appeller la méthode getPersonByName autant de fois qu\'il y a de noms passés en paramètre', (done) => {
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            let spyPerson = sinon.spy();
+            sinon.stub(remoteMovies, 'getPersonByName').callsFake((name) => {
+                return new Promise((resolve) => {
+                    spyPerson(name);
+                    resolve(new Person('123', 'vdvd'));
+                });
+            });
+            let test = () => {
+                expect(spyPerson.withArgs(paramActorsNameList[0]).calledOnce).toBe(true);
+                expect(spyPerson.withArgs(paramActorsNameList[1]).calledOnce).toBe(true);
+            };
+            let end = () => {
+                remoteMovies.getGenres.restore();
+                remoteMovies.getPersonByName.restore();
+                done();
+            };
             businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
                 .then((res) => {
-                    expGetPersonByName.verify();
-                    done();
+                    test();
+                    end();
                 })
                 .catch((err) => {
-                    fail(err);
-                    done();
+                    test();
+                    end();
                 });
         });
-        xit('Doit appeller la méthode getPersonByName autant de fois qu\'il y a de noms passés en paramètre', (done) => {
-            let twoPersonsList = [new Person(226, 'John Doe'), new Person(223, 'Micheal Bean')];
-
-            mockRemote.restore();
-            mockRemote = sinon.mock(remoteMovies);
-            expGetGenre = mockRemote.expects('getGenres').resolves(paramGenreList);
-            expGetPersonByName = 
-            mockRemote.expects('getPersonByName').once().withArgs('John Doe').resolves(twoPersonsList[0]);
-            mockRemote.expects('getPersonByName').once().withArgs('Micheal Bean').resolves(twoPersonsList[1]);
-            expDiecover = mockRemote.expects('discoverMovies').resolves(apiMovieList);
-
-            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, ['John Doe', 'Micheal Bean'], number)
+        it('Doit quand même résoudre une liste de film si la liste de nom de personnes est vide', (done) => {
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            sinon.stub(remoteMovies, 'discoverMovies').resolves(apiMovieList);
+            let end = () => {
+                remoteMovies.getGenres.restore();
+                remoteMovies.discoverMovies.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, [], number)
                 .then((res) => {
-                    expGetPersonByName.verify();
-                    done();
+                    expect(res).toEqual(apiMovieList);
+                    end();
                 })
                 .catch((err) => {
                     fail(err);
-                    done();
+                    end();
                 });
         });
-        xit('Ne doit pas appeller la méthode getPersonByName de la couche remote aucun nom n\'est passé en paramètre', (done) => {
-            mockRemote.restore();
-            mockRemote = sinon.mock(remoteMovies);
-            expGetGenre = mockRemote.expects('getGenres').resolves(paramGenreList);
-            expGetPersonByName = mockRemote.expects('getPersonByName').never();
-            expDiecover = mockRemote.expects('discoverMovies').resolves(apiMovieList);
+        it('Doit quand même résoudre une liste de film si l\'API ne parvient pas à retouver les personnes à partir de leur nom', (done) => {
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            sinon.stub(remoteMovies, 'getPersonByName')
+                .withArgs(paramActorsNameList[0]).resolves(null)
+                .withArgs(paramActorsNameList[1]).resolves(null);
+            sinon.stub(remoteMovies, 'discoverMovies').resolves(apiMovieList);
+            let end = () => {
+                remoteMovies.getGenres.restore();
+                remoteMovies.getPersonByName.restore();
+                remoteMovies.discoverMovies.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
+                .then((res) => {
+                    expect(res).toEqual(apiMovieList);
+                    end();
+                })
+                .catch((err) => {
+                    fail(err);
+                    end();
+                });
+        });
+        TODO:xit('Doit quand même retourner une liste de film si l\'API ne parvient pas à retouver l\'une des personnes à partir de son nom', (done) => {
+            sinon.stub(remoteMovies, 'getGenres').resolves(paramGenreList);
+            sinon.stub(remoteMovies, 'getPersonByName')
+                .withArgs(paramActorsNameList[0]).resolves(null)
+                .withArgs(paramActorsNameList[1]).resolves(paramPersonList[1]);
+            sinon.stub(remoteMovies, 'discoverMovies').resolves(apiMovieList);
+            let end = () => {
+                remoteMovies.getGenres.restore();
+                remoteMovies.getPersonByName.restore();
+                remoteMovies.discoverMovies.restore();
+                done();
+            };
+            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, paramActorsNameList, number)
+                .then((res) => {
+                    expect(res).toEqual(apiMovieList);
+                    end();
+                })
+                .catch((err) => {
+                    fail(err);
+                    end();
+                });
+        });
+        TODO:xit('Doit quan même résoudre une liste de films si l\'API rejete une erreur lors de la recherche d\'une personne de la liste', (done) => {
             
-            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, [], number)
-                .then((res) => {
-                    expGetPersonByName.verify();
-                    done();
-                })
-                .catch((err) => {
-                    fail(err);
-                    done();
-                });
-        });
-        xit('Doit quand même retourner une liste de film si la liste de nom de personnes est vide', (done) => {
-            mockRemote.restore();
-            mockRemote = sinon.mock(remoteMovies);
-            expGetGenre = mockRemote.expects('getGenres').resolves(paramGenreList);
-            expDiecover = mockRemote.expects('discoverMovies').resolves(apiMovieList);
-                
-            businessMovies.getMoviesByCriteria(paramGenreNameList, paramYear, paramPeriod, [], number)
-                .then((res) => {
-                    expect(res.length).toBe(2);
-                    done();
-                })
-                .catch((err) => {
-                    fail(err);
-                    done();
-                });
         });
 
         // période ou année
         TODO:xit('Doit passer une date au format YYY-MM-DD à l\'API', () => {
             
         });
-        xit('Doit resoudre une liste de film même si aucune année ou période n\'a été spécifiée', () => {
+        TODO:xit('Doit resoudre une liste de film même si aucune année ou période n\'a été spécifiée', () => {
             mockRemote.restore();
             mockRemote = sinon.mock(remoteMovies);
             expGetGenre = mockRemote.expects('getGenres').resolves(paramGenreList);
@@ -456,7 +541,7 @@ describe('businessMovies :', () => {
         });
         
         // Sorties possibles
-        xit('Doit résoudre une liste de @Movie en cas de succès', (done) => {
+        TODO:xit('Doit résoudre une liste de @Movie en cas de succès', (done) => {
             mockRemote.restore();
             mockRemote = sinon.mock(remoteMovies);
             expGetGenre = mockRemote.expects('getGenres').resolves(paramGenreList);
@@ -473,19 +558,16 @@ describe('businessMovies :', () => {
                     done();
                 });
         });
-        xit('Doit résoudre une liste de @Movie de moins de 20 éléments en cas de succès', (done) => {
-            // TODO: Doit résoudre une liste de Movie de moins de 20 éléments en cas de succès
+        TODO:xit('Doit résoudre une liste de @Movie de moins de 20 éléments en cas de succès', (done) => {
 
         });
-        xit('Doit résoudre une chaine de caractère si aucun film n\'a été trouvé', (done) => {
-            // TODO: Doit résoudre une liste de Movie vide si aucun film n\'a été trouvé
+        TODO:xit('Doit résoudre une chaine de caractère si aucun film n\'a été trouvé', (done) => {
 
         });
 
         // Cas d'erreur
-        xit('Doit rejeter une chaine de caractère en cas d\'erreur de la connexion avec l\'API', (done) => {
-            // TODO: Doit rejeter une chaine de caractère en cas d\'erreur de la connexion avec l\'API
-
+        TODO:xit('Doit rejeter une chaine de caractère en cas d\'erreur de la connexion avec l\'API', (done) => {
+            
         });
     });
 });

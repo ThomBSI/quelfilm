@@ -11,7 +11,7 @@
   "scripts": {
     "test-init": "jasmine init",
     "test": "jasmine",
-    "integration": "jasmine spec/TI/integration.spec.js",
+    "testi": "jasmine spec/TI/integration.spec.js",
     "deploy": "gcloud beta functions deploy dialogflowFirebaseFulfillment --trigger-http"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
     "promise": "^8.0.1"
   },
   "devDependencies": {
+    "express": "^4.16.2",
     "jasmine": "^3.0.0",
     "sinon": "^4.4.2"
   }
