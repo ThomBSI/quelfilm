@@ -77,7 +77,7 @@ exports.getMoviesByCriteria = function(genreNameList, year, period, personNameLi
             success: (genreList) => {
                 let searchedPeriod = year;
                 searchPersons(personNameList, (personList) => {
-                    searchMovies(genreList, searchedPeriod, personList, {
+                    searchMovies(genreList, searchedPeriod, personList, number, {
                         success: (movieList) => {
                             resolve(movieList);
                         },
@@ -86,9 +86,6 @@ exports.getMoviesByCriteria = function(genreNameList, year, period, personNameLi
                         }
                     });
                 });
-            },
-            error: () => {
-                reject(text.apiErrorMessage);
             }
         });
     });
@@ -114,7 +111,8 @@ function verifyNumber(number) {
 /**
  * Appel le callbacks.succes avec une liste vide si la liste d'entrée l'est aussi. 
  * @param {*} genreNameList 
- * @param {*} callbacks 
+ * @param {*} callbacks
+ * @param {*} callbacks.success
  */
 function searchGenres(genreNameList, callbacks) {
     let searchedGenreList = [];
@@ -129,12 +127,14 @@ function searchGenres(genreNameList, callbacks) {
                         }
                     }
                 }
+                callbacks.success(searchedGenreList);
             })
             .catch(() => {
-                callbacks.error()
+                callbacks.success(searchedGenreList);
             });
+    } else {
+        callbacks.success(searchedGenreList);
     }
-    callbacks.success(searchedGenreList);
 }
 
 /**
@@ -156,7 +156,7 @@ function searchPersons(personNameList, callback) {
                         }
                     })
                     .catch(() => {
-                        console.log(`api error on ${personName}`);
+                        resolveMap(null);
                     });
             }));
         });
@@ -179,14 +179,25 @@ function searchPersons(personNameList, callback) {
     }
 }
 
-function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, callbacks) {
+/**
+ * 
+ * @param {*} searchedGenreList 
+ * @param {*} searchedPeriod 
+ * @param {*} searchedPersonList 
+ * @param {*} number
+ * @param {*} callbacks 
+ * @param {*} callbacks.success
+ * @param {*} callbacks.error
+ */
+function searchMovies(searchedGenreList, searchedPeriod, searchedPersonList, number, callbacks) {
     remote.discoverMovies(searchedGenreList, searchedPeriod, searchedPersonList)
         .then((movieList) => {
             let finalMovieList = [];
             if (movieList.length === 0) {
                 callbacks.success(text.apiNoResultsErrorMessage);
             } else {
-                for (let k = 0; k < movieList.length; k++) {
+                number = Math.min(number, movieList.length);
+                for (let k = 0; k < number; k++) {
                     finalMovieList.push(movieList[k]);
                 }
             }

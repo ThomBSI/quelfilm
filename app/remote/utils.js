@@ -8,7 +8,6 @@ exports.sendHttps = function (url) {
     return new Promise((resolve, reject) => {
         // let urlEncoded = encodeURIComponent(url);
         https.get(url, (res) => {
-                console.log('1');
                 const {
                     statusCode
                 } = res;
