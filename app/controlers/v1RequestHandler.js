@@ -1,3 +1,4 @@
+const { DialogflowApp } = require('actions-on-google');
 const Send = require('./send');
 const businessModule = require('../business/movies');
 const googleFormatter = require('../responseFormatter/googleFormatter');
@@ -6,7 +7,8 @@ const actionNames = {
     INPUT_MOVIES_POPULAR: 'input.movies.popular',
     INPUT_MOVIE_RECAP: 'input.movie.recap',
     INPUT_WELCOME: 'input.welcome',
-    INPUT_UNKNOWN: 'input.unknown'
+    INPUT_UNKNOWN: 'input.unknown',
+    EXIT_WEATHER: 'exit.weather'
 };
 let send;
 
@@ -18,7 +20,6 @@ exports.actionNames = actionNames;
  * @param {*} response 
  */
 exports.processV1Request = function (sender) {
-    console.log('$1')
     let action = sender.request.body.result.action; // https://dialogflow.com/docs/actions-and-parameters
     let parameters = sender.request.body.result.parameters; // https://dialogflow.com/docs/actions-and-parameters
     let inputContexts = sender.request.body.result.contexts; // https://dialogflow.com/docs/contexts
@@ -47,6 +48,9 @@ function actionHandlers(action) {
             break;
         case actionNames.INPUT_UNKNOWN:
             functionHandler = inputUnknownHandler;
+            break;
+        case actionNames.EXIT_WEATHER:
+            functionHandler = exitWeatherHandler;
             break;
         default:
             functionHandler = defaultHandler;
@@ -120,4 +124,15 @@ function inputUnknownHandler(parameters) {
 /** Default handler for unknown or undefined actions. */
 function defaultHandler(parameters) {
     send.sendSimpleResponse('Je ne comprend pas votre demande');
+}
+
+function exitWeatherHandler(parameters) {
+    // const https = require('https');
+    // const clientAccessToken = '';
+    // const devAccessToken = '';
+    // const url = `https://api.dialogflow.com/v1/`;    
+    // http.get()
+
+    // send.sendResponseWithEvent('go_to_weather');
+    //go_to_weather test_event
 }

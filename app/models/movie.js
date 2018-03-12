@@ -1,12 +1,24 @@
-function Movie() {
+const Person = require('./person');
+
+class Movie {
+    
+    constructor() {
+        /**
+         * @type String
+         */
+        this.id = '';
+        this.title = '';
+        this.directorName = '';
+        /**
+         * @type Array<Person>
+         */
+        this.mainActors = [];
+        /**
+         * @type Date
+         */
+        this.releaseDate = null;
+        this.posterPath = '';
+        this.abstract = '';
+    }
 }
-
-Movie.prototype.id = '';
-Movie.prototype.title = '';
-Movie.prototype.directorName = '';
-Movie.prototype.mainActors = [];
-Movie.prototype.releaseDate = null;
-Movie.prototype.posterPath = '';
-Movie.prototype.abstract = '';
-
 module.exports = Movie;

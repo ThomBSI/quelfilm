@@ -1,5 +1,9 @@
 const { AssistantApp, DialogflowApp } = require('actions-on-google');
 
+/**
+ * 
+ * @param {{request: e.Request, response: e.Response}} options 
+ */
 function Send(options) {
     this.request = options.request;
     this.response = options.response;
@@ -12,6 +16,15 @@ Send.prototype.sendSimpleResponse = function(response) {
 
 Send.prototype.sendResponseWithList = function(prompt, response) {
     this.app.askWithList(prompt, response);
+}
+
+Send.prototype.sendResponseWithEvent = function(eventName, eventParameters) {
+    this.response.json({
+        'followupEvent': {
+            'name': eventName,
+            'data': eventParameters
+        }
+    });
 }
 
 module.exports = Send;

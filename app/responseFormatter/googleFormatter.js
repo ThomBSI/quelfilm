@@ -1,5 +1,6 @@
 const DialogflowApp = require('actions-on-google').DialogflowApp;
 const { text, textDev } = require('../resources/fr-FR');
+const Movie = require('../models/movie');
 
 /**
  * Construit une liste de films sous la forme d'une liste de cartes google assistant. 
@@ -8,7 +9,7 @@ const { text, textDev } = require('../resources/fr-FR');
  * Retourne une simple carte si la liste ne contien qu'un élément. 
  * Retourne un message simple si la liste est vide.
  * 
- * @param {*} moviesList 
+ * @param {Array<Movie>} moviesList 
  */
 exports.buildMoviesListItems = function(moviesList) {
     let response = null;
@@ -39,8 +40,8 @@ exports.buildMoviesListItems = function(moviesList) {
 
 /**
  * Construit une réponse simple sous la forme d'un texte et d'un speech. Le texte est optionnel.
- * @param {*} speech 
- * @param {*} displayText 
+ * @param {String} speech 
+ * @param {String} displayText 
  */
 exports.buildSimpleResponse = function(speech, displayText) {
     return {
@@ -50,10 +51,27 @@ exports.buildSimpleResponse = function(speech, displayText) {
 }
 
 /**
+ * 
+ * @param {String} eventName 
+ * @param {{String: String}} eventParameters 
+ */
+exports.respondWithEvent = function(eventName, eventParameters) {
+    if (!eventParameters) eventParameters = {};
+    let app = new DialogflowApp();
+    app.ask
+    return {
+        followupEvent: {
+            name: eventName,
+            data: eventParameters
+        }
+    };
+}
+
+/**
  * Construit la carte d'un film pour une liste. 
  * Pour construire la carte d'un film, il faut à minima le titre du film et son id. 
  * ATTENTION ! l'Id ne peut pas être égale à zéro ! 
- * @param {*} movie 
+ * @param {Movie} movie 
  */
 function buildSingleMovieOptionItem(movie) {
     let item = null;
@@ -67,6 +85,10 @@ function buildSingleMovieOptionItem(movie) {
     return item;
 }
 
+/**
+ * 
+ * @param {Movie} movie 
+ */
 function buildrichResponseBasicCard(movie) {
     let app = new DialogflowApp();
     let basicCard = null;
@@ -80,6 +102,10 @@ function buildrichResponseBasicCard(movie) {
     return basicCard;
 }
 
+/**
+ * 
+ * @param {Movie} movie 
+ */
 function buildMovieDescription(movie) {
     let description = '';
     if (movie.releaseDate != null) description = `${movie.releaseDate.getFullYear()}`;

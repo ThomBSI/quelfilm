@@ -1,8 +1,15 @@
-function Person(personId, personName) {
-    this.personId = personId;
-    this.personName = personName;
+class Person {
+
+    constructor(personId, personName) {
+        /**
+         * @type String
+         */
+        this.personId = personId;
+        /**
+         * @type String
+         */
+        this.personName = personName;
+        this.profilePath = '';
+    }
 }
-
-Person.profilePath = '';
-
 module.exports = Person;
