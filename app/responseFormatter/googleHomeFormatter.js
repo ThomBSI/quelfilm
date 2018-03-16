@@ -1,8 +1,9 @@
-const Movie = require('../models/movie');
+const { Movie } = require('../models/Movie');
 
-class GoogleHome {
+class GoogleHomeFormatter {
 
     constructor() {
+        
     }
 
     /**
@@ -16,4 +17,4 @@ class GoogleHome {
         })
     }
 }
-exports.GoogleHome = GoogleHome;
+exports.GoogleHomeFormatter = GoogleHomeFormatter;

@@ -12,4 +12,4 @@ class Person {
         this.profilePath = '';
     }
 }
-module.exports = Person;
+module.exports.Person = Person;

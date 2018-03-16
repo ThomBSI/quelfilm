@@ -1,30 +1,31 @@
-const { AssistantApp, DialogflowApp } = require('actions-on-google');
+const { DialogflowApp } = require('actions-on-google');
 
-/**
- * 
- * @param {{request: e.Request, response: e.Response}} options 
- */
-function Send(options) {
-    this.request = options.request;
-    this.response = options.response;
-    this.app = new DialogflowApp(options);
+class Send {
+
+    /**
+     * @param {{request: Request, response: Response}} options
+     */
+    constructor(options) {
+        this.request = options.request;
+        this.response = options.response;
+        this.app = new DialogflowApp(options);
+    }
+
+    sendSimpleResponse(response) {
+        this.app.ask(response);
+    }
+
+    sendResponseWithList(prompt, response) {
+        this.app.askWithList(prompt, response);
+    }
+
+    sendResponseWithEvent(eventName, eventParameters) {
+        this.response.json({
+            'followupEvent': {
+                'name': eventName,
+                'data': eventParameters
+            }
+        });
+    }
 }
-
-Send.prototype.sendSimpleResponse = function(response) {
-    this.app.ask(response);
-}
-
-Send.prototype.sendResponseWithList = function(prompt, response) {
-    this.app.askWithList(prompt, response);
-}
-
-Send.prototype.sendResponseWithEvent = function(eventName, eventParameters) {
-    this.response.json({
-        'followupEvent': {
-            'name': eventName,
-            'data': eventParameters
-        }
-    });
-}
-
-module.exports = Send;
+module.exports.Send = Send;

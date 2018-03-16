@@ -1,71 +1,81 @@
 const DialogflowApp = require('actions-on-google').DialogflowApp;
 const { text, textDev } = require('../resources/fr-FR');
-const Movie = require('../models/movie');
+const { Movie } = require('../models/Movie');
 
-/**
- * Construit une liste de films sous la forme d'une liste de cartes google assistant. 
- * La liste en entrée doit comprendre entre 2 et 20 films (@Movie). 
- * Lève une erreur si la liste d'entrée est plus grande que 20. 
- * Retourne une simple carte si la liste ne contien qu'un élément. 
- * Retourne un message simple si la liste est vide.
- * 
- * @param {Array<Movie>} moviesList 
- */
-exports.buildMoviesListItems = function(moviesList) {
-    let response = null;
-    let emptyMessage = exports.buildSimpleResponse(text.apiNoResultsErrorMessage);
-    let app = new DialogflowApp();
-    if (moviesList.length > 20) {
-        throw new Error(textDev.listTooLong);
-    } else if (moviesList.length === 1) {
-        response = buildrichResponseBasicCard(moviesList[0]);
-    } else if (moviesList.length != 0) {
-        let listOptions = [];
-        moviesList.forEach((movie) => {
-            let item = buildSingleMovieOptionItem(movie);
-            if (item != null) {
-                listOptions.push(item);
-            }
-        });
-        if (listOptions.length === 0) {
-            response = emptyMessage;
-        } else {
-            response = app.buildList(`${text.resultCountIntroduction}${moviesList.length}`).addItems(listOptions);
-        }
-    } else {
-        response = emptyMessage;
+class GoogleFormatter {
+
+    constructor() {
+
     }
-    return response;
-}
 
-/**
- * Construit une réponse simple sous la forme d'un texte et d'un speech. Le texte est optionnel.
- * @param {String} speech 
- * @param {String} displayText 
- */
-exports.buildSimpleResponse = function(speech, displayText) {
-    return {
-        speech: speech | displayText,
-        displayText: displayText | speech
-    };
-}
-
-/**
- * 
- * @param {String} eventName 
- * @param {{String: String}} eventParameters 
- */
-exports.respondWithEvent = function(eventName, eventParameters) {
-    if (!eventParameters) eventParameters = {};
-    let app = new DialogflowApp();
-    app.ask
-    return {
-        followupEvent: {
-            name: eventName,
-            data: eventParameters
+    /**
+     * Construit une liste de films sous la forme d'une liste de cartes google assistant. 
+     * La liste en entrée doit comprendre entre 2 et 20 films (@Movie). 
+     * Lève une erreur si la liste d'entrée est plus grande que 20. 
+     * Retourne une simple carte si la liste ne contien qu'un élément. 
+     * Retourne un message simple si la liste est vide.
+     * 
+     * @param {Array<Movie>} moviesList 
+     */
+    buildMoviesListItems(moviesList) {
+        let response = null;
+        let emptyMessage = exports.buildSimpleResponse(text.apiNoResultsErrorMessage);
+        let app = new DialogflowApp();
+        if (moviesList.length > 20) {
+            throw new Error(textDev.listTooLong);
+        } else if (moviesList.length === 1) {
+            response = buildrichResponseBasicCard(moviesList[0]);
+        } else if (moviesList.length != 0) {
+            let listOptions = [];
+            moviesList.forEach((movie) => {
+                let item = buildSingleMovieOptionItem(movie);
+                if (item != null) {
+                    listOptions.push(item);
+                }
+            });
+            if (listOptions.length === 0) {
+                response = emptyMessage;
+            } else {
+                response = app.buildList(`${text.resultCountIntroduction}${moviesList.length}`).addItems(listOptions);
+            }
+        } else {
+            response = emptyMessage;
         }
-    };
+        return response;
+    }
+
+    /**
+     * Construit une réponse simple sous la forme d'un texte et d'un speech. Le texte est optionnel.
+     * @param {String} speech 
+     * @param {String} displayText 
+     */
+    buildSimpleResponse(speech, displayText) {
+        return {
+            speech: speech | displayText,
+            displayText: displayText | speech
+        };
+    }
+
+    /**
+     * 
+     * @param {String} eventName 
+     * @param {{String: String}} eventParameters 
+     */
+    respondWithEvent(eventName, eventParameters) {
+        if (!eventParameters) eventParameters = {};
+        let app = new DialogflowApp();
+        app.ask
+        return {
+            followupEvent: {
+                name: eventName,
+                data: eventParameters
+            }
+        };
+    }
+
 }
+module.exports.GoogleFormatter = GoogleFormatter;
+
 
 /**
  * Construit la carte d'un film pour une liste. 

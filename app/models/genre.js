@@ -1,6 +1,13 @@
-function Genre(id, name) {
-    this.id = id;
-    this.name = name;
-}
+class Genre {
 
-module.exports = Genre;
+    /**
+     * 
+     * @param {String} id 
+     * @param {String} name 
+     */
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+module.exports.Genre = Genre;

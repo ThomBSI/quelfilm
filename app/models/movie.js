@@ -1,4 +1,4 @@
-const Person = require('./person');
+const { Person } = require('./Person');
 
 class Movie {
     
@@ -21,4 +21,4 @@ class Movie {
         this.abstract = '';
     }
 }
-module.exports = Movie;
+module.exports.Movie = Movie;
